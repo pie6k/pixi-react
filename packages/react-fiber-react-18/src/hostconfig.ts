@@ -359,8 +359,7 @@ function appendChildToContainer<
     Instance extends PixiReactMinimalExpandoContainer,
 >(parent: Container, child: Instance)
 {
-    // TODO: is this intentionally calling appendChild (not doAppendChild)? It will emit two events
-    const res = appendChild(parent, child);
+    const res = doAppendChild(parent, child);
 
     parent.__reactpixi?.root?.emit(`__REACT_PIXI_REQUEST_RENDER__`, {
         detail: 'appendChildToContainer',
@@ -388,8 +387,7 @@ function removeChildFromContainer<
     Instance extends PixiReactMinimalExpandoContainer,
 >(container: Container, child: Instance)
 {
-    // TODO: is this intentionally calling removeChild (not doRemoveChild)? It will emit two events
-    const res = removeChild(container, child);
+    const res = doRemoveChild(container, child);
 
     container.__reactpixi?.root?.emit(`__REACT_PIXI_REQUEST_RENDER__`, {
         detail: 'removeChildFromContainer',

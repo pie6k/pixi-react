@@ -93,6 +93,8 @@ export const getTextureFromProps = (elementType: string, root: Container, props:
 
         return props.texture;
     }
+
+    // TODO: although source can be a Texture this seems to fail internally within PixiJS
     const result
         = check('image', { typeofs: ['string'], instanceofs: [HTMLImageElement] })
         || check('video', { typeofs: ['string'], instanceofs: [HTMLVideoElement] })
