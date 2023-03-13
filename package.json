@@ -81,6 +81,7 @@
     "babel-jest": "^29.3.1",
     "babel-plugin-module-resolver": "4.1.0",
     "cross-env": "^7.0.3",
+    "directory-tree": "^3.5.1",
     "esbuild": "^0.17.11",
     "eslint": "^8.29.0",
     "eslint-plugin-react": "^7.31.11",
