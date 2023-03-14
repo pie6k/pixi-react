@@ -27,6 +27,26 @@ type CommitUpdateType<T extends DisplayObject> = (
     internalHandle: any,
 ) => void;
 
+class ReceiveAttachClass extends PixiContainer
+{
+    _mockAttach: PixiContainer | null = null;
+
+    get mockAttach(): PixiContainer | null
+    {
+        return this._mockAttach;
+    }
+
+    set mockAttach(view: PixiContainer | null)
+    {
+        this._mockAttach = view;
+    }
+
+    mockAttachFn(view: PixiContainer | null)
+    {
+        this._mockAttach = view;
+    }
+}
+
 describe('reconciler', () =>
 {
     const prepareRenderToStage = (createRoot: CreateRootType, unmountComponentAtNode: UnmountComponentAtNodeType) =>
@@ -58,7 +78,7 @@ describe('reconciler', () =>
 
     const prepare = (spyOnHostConfig = spyOnObjectMethods<PixiReactHostConfig<PixiReactContainer, PixiReactContainer>>) =>
     {
-        const { roots, hostConfig, createRoot, unmountComponentAtNode } = configure({
+        const { roots, hostConfig, createRoot, unmountComponentAtNode, PixiComponent } = configure({
             spyOnHostConfig,
         });
 
@@ -74,7 +94,42 @@ describe('reconciler', () =>
             roots.clear();
         };
 
+        const attachSpies: {
+            mockAttachSetSpy: jest.SpiedFunction<(view: PixiContainer | null) => void> | null;
+            mockAttachFnSpy: jest.SpiedFunction<(view: PixiContainer | null) => void> | null;
+            addChild: jest.SpiedFunction<(...args: DisplayObject[]) => DisplayObject> | null;
+            removeChild: jest.SpiedFunction<(...args: DisplayObject[]) => DisplayObject> | null;
+        } = {
+            mockAttachSetSpy: null,
+            mockAttachFnSpy: null,
+            addChild: null,
+            removeChild: null
+        };
+
+        const receiveAttachComponentLifecycle = {
+            create()
+            {
+                const instance = new ReceiveAttachClass();
+
+                attachSpies.mockAttachSetSpy = jest.spyOn(instance, 'mockAttach', 'set');
+                attachSpies.mockAttachFnSpy = jest.spyOn(instance, 'mockAttachFn');
+                attachSpies.addChild = jest.spyOn(instance, 'addChild');
+                attachSpies.removeChild = jest.spyOn(instance, 'removeChild');
+
+                return instance;
+            },
+        };
+        const attachComponentLifecycle = {
+            create: jest.fn(() => new PixiContainer()),
+            didMount: jest.fn(),
+            willUnmount: jest.fn(),
+        };
+
         return {
+            PixiComponent,
+            attachComponentLifecycle,
+            receiveAttachComponentLifecycle,
+            attachSpies,
             hostConfig,
             createRoot,
             unmountComponentAtNode,
@@ -114,11 +169,13 @@ describe('reconciler', () =>
 
         test('append children', () =>
         {
-            const { hostConfig, renderToStage, cleanup } = prepare();
+            const { container, hostConfig, renderToStage, cleanup } = prepare();
+            const containerRef = createRef<PixiContainer>();
+            const textRef = createRef<PixiText>();
 
             renderToStage(
-                <Container>
-                    <Text text="bar" />
+                <Container ref={containerRef}>
+                    <Text ref={textRef} text="bar" />
                 </Container>,
             );
 
@@ -130,6 +187,9 @@ describe('reconciler', () =>
             expect(mockedAppendInitialChild).toHaveBeenCalledTimes(1);
             expect(calls[0][0]).toEqual(expect.any(PixiContainer));
             expect(calls[0][1]).toEqual(expect.any(PixiText));
+
+            expect(container.children).toEqual([containerRef.current]);
+            expect(containerRef.current!.children).toEqual([textRef.current]);
 
             cleanup();
         });
@@ -165,6 +225,155 @@ describe('reconciler', () =>
 
     describe('rerender', () =>
     {
+        test('attach and detach children with string', () =>
+        {
+            const {
+                container,
+                hostConfig,
+                renderToStage,
+                cleanup,
+                attachComponentLifecycle,
+                receiveAttachComponentLifecycle,
+                attachSpies,
+                PixiComponent,
+            } = prepare();
+            const ReceiveAttachComponent = PixiComponent('ReceiveAttachComponent', receiveAttachComponentLifecycle);
+            const AttachComponent = PixiComponent('AttachComponent', attachComponentLifecycle);
+
+            const receiveAttachRef = createRef<ReceiveAttachClass>();
+            const attachRef = createRef<PixiContainer>();
+
+            renderToStage(
+                <ReceiveAttachComponent ref={receiveAttachRef}>
+                    <AttachComponent attach="mockAttach" ref={attachRef} />
+                </ReceiveAttachComponent>,
+            );
+
+            const attachedComponent = attachRef.current!;
+
+            const mockedAppendInitialChild = hostConfig.appendInitialChild as jest.MockedFunction<
+                typeof hostConfig.appendInitialChild
+            >;
+            const mockedRemoveChild = hostConfig.removeChild as jest.MockedFunction<
+                (parentInstance: PixiContainer, child: PixiText) => void
+            >;
+
+            const { calls: appendCalls } = mockedAppendInitialChild.mock;
+            const { calls: removeCalls } = mockedRemoveChild.mock;
+
+            expect(mockedAppendInitialChild).toHaveBeenCalledTimes(1);
+            expect(appendCalls[0][0]).toEqual(expect.any(ReceiveAttachClass));
+            expect(appendCalls[0][1]).toEqual(expect.any(PixiContainer));
+
+            expect(container.children).toEqual([receiveAttachRef.current]);
+
+            // attached component is not added to scenegraph
+            expect(attachSpies.addChild).not.toHaveBeenCalled();
+            // its didMount callback is still fired
+            expect(attachComponentLifecycle.didMount).toHaveBeenCalledWith(attachedComponent, receiveAttachRef.current);
+            // and the appropriate property has the PIXI instance attached
+            expect(attachSpies.mockAttachSetSpy).toHaveBeenCalledWith(attachRef.current);
+            expect(receiveAttachRef.current!.mockAttach).toEqual(attachRef.current);
+
+            renderToStage(<ReceiveAttachComponent ref={receiveAttachRef} />);
+
+            // hostConfig removeChild is still called
+            expect(mockedRemoveChild).toHaveBeenCalledTimes(1);
+
+            expect(removeCalls[0][0]).toEqual(expect.any(ReceiveAttachClass));
+            expect(removeCalls[0][1]).toEqual(expect.any(PixiContainer));
+
+            // attached component is not removed from scenegraph
+            expect(attachSpies.removeChild).not.toHaveBeenCalled();
+            // its willUnmount callback is still fired
+            expect(attachComponentLifecycle.willUnmount).toHaveBeenCalledWith(attachedComponent, receiveAttachRef.current);
+            // and the appropriate property has the PIXI instance detached and set to its original value
+            expect(attachSpies.mockAttachSetSpy).toHaveBeenCalledTimes(2);
+            expect(attachSpies.mockAttachSetSpy).toHaveBeenLastCalledWith(null);
+            expect(receiveAttachRef.current!.mockAttach).toEqual(null);
+
+            cleanup();
+        });
+
+        test('attach and detach children with function', () =>
+        {
+            const {
+                container,
+                hostConfig,
+                renderToStage,
+                cleanup,
+                attachComponentLifecycle,
+                receiveAttachComponentLifecycle,
+                attachSpies,
+                PixiComponent,
+            } = prepare();
+            const ReceiveAttachComponent = PixiComponent('ReceiveAttachComponent', receiveAttachComponentLifecycle);
+            const AttachComponent = PixiComponent('AttachComponent', attachComponentLifecycle);
+
+            const receiveAttachRef = createRef<ReceiveAttachClass>();
+            const attachRef = createRef<PixiContainer>();
+            const attachFn = (parent: ReceiveAttachClass, child: PixiContainer) =>
+            {
+                parent.mockAttachFn(child);
+
+                return () =>
+                {
+                    parent.mockAttachFn(null);
+                };
+            };
+
+            renderToStage(
+                <ReceiveAttachComponent ref={receiveAttachRef}>
+                    <AttachComponent attach={attachFn} ref={attachRef} />
+                </ReceiveAttachComponent>,
+            );
+
+            const attachedComponent = attachRef.current!;
+
+            const mockedAppendInitialChild = hostConfig.appendInitialChild as jest.MockedFunction<
+                typeof hostConfig.appendInitialChild
+                >;
+            const mockedRemoveChild = hostConfig.removeChild as jest.MockedFunction<
+                (parentInstance: PixiContainer, child: PixiText) => void
+                >;
+
+            const { calls: appendCalls } = mockedAppendInitialChild.mock;
+            const { calls: removeCalls } = mockedRemoveChild.mock;
+
+            expect(mockedAppendInitialChild).toHaveBeenCalledTimes(1);
+            expect(appendCalls[0][0]).toEqual(expect.any(ReceiveAttachClass));
+            expect(appendCalls[0][1]).toEqual(expect.any(PixiContainer));
+
+            expect(container.children).toEqual([receiveAttachRef.current]);
+
+            // attached component is not added to scenegraph
+            expect(attachSpies.addChild).not.toHaveBeenCalled();
+            // its didMount callback is still fired
+            expect(attachComponentLifecycle.didMount).toHaveBeenCalledWith(attachedComponent, receiveAttachRef.current);
+            // and the appropriate property has the PIXI instance attached
+            expect(attachSpies.mockAttachFnSpy).toHaveBeenCalledWith(attachRef.current);
+            expect(receiveAttachRef.current!.mockAttach).toEqual(attachRef.current);
+
+            renderToStage(<ReceiveAttachComponent ref={receiveAttachRef} />);
+
+            // hostConfig removeChild is still called
+            expect(mockedRemoveChild).toHaveBeenCalledTimes(1);
+
+            expect(removeCalls[0][0]).toEqual(expect.any(ReceiveAttachClass));
+            expect(removeCalls[0][1]).toEqual(expect.any(PixiContainer));
+
+            // attached component is not removed from scenegraph
+            expect(attachSpies.removeChild).not.toHaveBeenCalled();
+            // its willUnmount callback is still fired
+            expect(attachComponentLifecycle.willUnmount).toHaveBeenCalledWith(attachedComponent, receiveAttachRef.current);
+            // and the appropriate property has the PIXI instance detached and set to its original value
+            expect(attachSpies.mockAttachFnSpy).toHaveBeenCalledTimes(2);
+            expect(attachSpies.mockAttachFnSpy).toHaveBeenLastCalledWith(null);
+            expect(receiveAttachRef.current!.mockAttach).toEqual(null);
+
+            cleanup();
+        });
+
         test('remove children', () =>
         {
             const { hostConfig, renderToStage, cleanup } = prepare();
