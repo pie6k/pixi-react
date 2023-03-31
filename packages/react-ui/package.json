@@ -40,14 +40,14 @@
     "xbuild:dev": "cross-env NODE_ENV=development rollup -c",
     "xbuild:prod": "cross-env NODE_ENV=production rollup -c",
     "xtest": "jest --silent",
-    "test:ci": "jest --silent --runInBand",
+    "xtest:ci": "jest --silent --runInBand",
     "test:types": "tsc --noEmit",
     "test:watch": "jest --watch",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "dependencies": {
-    "@pixi/ui": "^0.5.8"
+    "@pixi/ui": "^0.7.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.0",
