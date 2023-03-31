@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/node:lts
+      - image: cimg/node:18.13.0
 
     working_directory: ~/repo
 
@@ -16,7 +16,7 @@ jobs:
           - v{{ checksum "_cache_version" }}-dependencies-{{ checksum "package.json" }}
           - v{{ checksum "_cache_version" }}-dependencies-
 
-      - run: npm install
+      - run: npm ci --legacy-peer-deps
 
       - save_cache:
           paths:
@@ -25,4 +25,4 @@ jobs:
 
       - run: npm run lint
 
-      - run: npm test --ci --silent
+      - run: npm run test:ci --ci --silent
