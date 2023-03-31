@@ -1,11 +1,11 @@
-import { Texture } from '@pixi/core';
-import type { Container } from '@pixi/display';
-import { DisplayObject } from '@pixi/display';
 import { eventHandlers, setValue } from './pixi';
-import { invariant } from '@pixi/react-invariant';
-import type { DisplayObjectSettableProperty, PixiReactTexture, PropsType } from '../types';
 import { not, hasKey } from './fp';
-import type { FederatedEventEmitterTypes } from '@pixi/events';
+import type {
+    DisplayObjectSettableProperty,
+    PixiReactMinimalExpandoContainer,
+    PropsType,
+} from '@pixi/react-types';
+import { invariant } from '@pixi/react-invariant';
 
 export const CHILDREN = 'children';
 /**
@@ -27,32 +27,45 @@ export const PROPS_RESERVED = {
  *
  * @type {Object}
  */
-export const PROPS_DISPLAY_OBJECT: Record<DisplayObjectSettableProperty, any> = {
-    alpha: 1,
-    buttonMode: false,
-    cacheAsBitmap: false,
-    cursor: null,
-    filterArea: null,
-    filters: null,
-    hitArea: null,
-    interactive: false,
-    mask: null,
-    pivot: 0,
-    position: 0,
-    renderable: true,
-    rotation: 0,
-    scale: 1,
-    skew: 0,
-    transform: null,
-    visible: true,
-    x: 0,
-    y: 0,
-};
+export const PROPS_DISPLAY_OBJECT: Record<DisplayObjectSettableProperty, any>
+    = {
+        alpha: 1,
+        buttonMode: false,
+        cacheAsBitmap: false,
+        cursor: null,
+        filterArea: null,
+        filters: null,
+        hitArea: null,
+        interactive: false,
+        mask: null,
+        pivot: 0,
+        position: 0,
+        renderable: true,
+        rotation: 0,
+        scale: 1,
+        skew: 0,
+        transform: null,
+        visible: true,
+        x: 0,
+        y: 0,
+    };
 
 type TypeValidator = {
     typeofs: string[];
     // eslint-disable-next-line @typescript-eslint/ban-types
     instanceofs: Function[];
+};
+
+type PixiReactMinimalTexture = {
+    valid: boolean;
+    once: (evt: any, handler: any) => void;
+    __reactpixi: {
+        root: PixiReactMinimalExpandoContainer;
+    };
+};
+
+type MinimalStaticTexture = {
+    from: (source: any) => any;
 };
 
 /**
@@ -64,13 +77,21 @@ type TypeValidator = {
  * @param {object} props
  * @returns {PIXI.Texture|null}
  */
-export const getTextureFromProps = (elementType: string, root: Container, props: PropsType = {}) =>
+export const getTextureFromProps = <
+    PixiStaticTexture extends MinimalStaticTexture,
+    PixiReactTexture extends PixiReactMinimalTexture,
+    Container extends PixiReactMinimalExpandoContainer
+>(
+    Texture: PixiStaticTexture,
+    elementType: string,
+    root: Container,
+    props: PropsType = {}
+) =>
 {
-    const emitChange = (texture: PixiReactTexture) =>
-        requestAnimationFrame(() =>
-        {
-            texture?.__reactpixi?.root?.emit(`__REACT_PIXI_REQUEST_RENDER__`);
-        });
+    if (props.texture)
+    {
+        return props.texture;
+    }
 
     // eslint-disable-next-line consistent-return
     const check = (inType: string, validator: TypeValidator) =>
@@ -87,23 +108,32 @@ export const getTextureFromProps = (elementType: string, root: Container, props:
         }
     };
 
-    if (props.texture)
-    {
-        invariant(props.texture instanceof Texture, `${elementType} texture needs to be typeof \`Texture\``);
-
-        return props.texture;
-    }
-
     // TODO: although source can be a Texture this seems to fail internally within PixiJS
     const result
-        = check('image', { typeofs: ['string'], instanceofs: [HTMLImageElement] })
-        || check('video', { typeofs: ['string'], instanceofs: [HTMLVideoElement] })
+        = check('image', {
+            typeofs: ['string'],
+            instanceofs: [HTMLImageElement],
+        })
+        || check('video', {
+            typeofs: ['string'],
+            instanceofs: [HTMLVideoElement],
+        })
         || check('source', {
             typeofs: ['string', 'number'],
-            instanceofs: [HTMLImageElement, HTMLVideoElement, HTMLCanvasElement, Texture],
+            instanceofs: [
+                HTMLImageElement,
+                HTMLVideoElement,
+                HTMLCanvasElement,
+            ],
         });
 
     invariant(!!result, `${elementType} could not get texture from props`);
+
+    const emitChange = (texture: PixiReactTexture) =>
+        requestAnimationFrame(() =>
+        {
+            texture?.__reactpixi?.root?.emit(`__REACT_PIXI_REQUEST_RENDER__`);
+        });
 
     const texture: PixiReactTexture = Texture.from(result);
 
@@ -119,7 +149,9 @@ export const getTextureFromProps = (elementType: string, root: Container, props:
     return texture;
 };
 
-const filterProps = not(hasKey([...Object.keys(PROPS_RESERVED), ...eventHandlers]));
+const filterProps = not(
+    hasKey([...Object.keys(PROPS_RESERVED), ...eventHandlers])
+);
 
 /**
  * Apply default props on Display Object instance (which are all components)
@@ -128,15 +160,18 @@ const filterProps = not(hasKey([...Object.keys(PROPS_RESERVED), ...eventHandlers
  * @param {Object} oldProps
  * @param {Object} newProps
  */
-export function applyDefaultProps(instance: Container, oldProps: PropsType, newProps: PropsType)
+export function applyDefaultProps<
+    Instance extends PixiReactMinimalExpandoContainer
+>(instance: Instance, oldProps: PropsType, newProps: PropsType)
 {
     let changed = false;
 
-    invariant(
-        DisplayObject.prototype.isPrototypeOf(instance),
-        'instance needs to be typeof `DisplayObject`, got `%s`',
-        typeof instance,
-    );
+    // TODO: is it possible to have runtime type checking without importing pixi?
+    // invariant(
+    //     DisplayObject.prototype.isPrototypeOf(instance),
+    //     "instance needs to be typeof `DisplayObject`, got `%s`",
+    //     typeof instance
+    // );
 
     // update event handlers
     if (!newProps.ignoreEvents)
@@ -146,7 +181,7 @@ export function applyDefaultProps(instance: Container, oldProps: PropsType, newP
 
         for (let i = 0; i < eventHandlers.length; i++)
         {
-            const evt = eventHandlers[i] as keyof FederatedEventEmitterTypes;
+            const evt = eventHandlers[i];
 
             if (oldProps[evt] !== newProps[evt])
             {
@@ -205,17 +240,25 @@ export function applyDefaultProps(instance: Container, oldProps: PropsType, newP
         {
             // is a default value, use that
             console.warn(
-                `setting default value: ${prop}, from: ${instance[prop as keyof typeof instance]} to: ${value} for`,
-                instance,
+                `setting default value: ${prop}, from: ${
+                    instance[prop as keyof typeof instance]
+                } to: ${value} for`,
+                instance
             );
             changed = true;
-            setValue(instance, prop, PROPS_DISPLAY_OBJECT[prop as DisplayObjectSettableProperty]);
+            setValue(
+                instance,
+                prop,
+                PROPS_DISPLAY_OBJECT[prop as DisplayObjectSettableProperty]
+            );
         }
         else
         {
             console.warn(
-                `ignoring prop: ${prop}, from ${instance[prop as keyof typeof instance]} to ${value} for`,
-                instance,
+                `ignoring prop: ${prop}, from ${
+                    instance[prop as keyof typeof instance]
+                } to ${value} for`,
+                instance
             );
         }
     }

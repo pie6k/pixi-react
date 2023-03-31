@@ -1,6 +1,7 @@
 import { SimpleRope as PixiSimpleRope } from '@pixi/mesh-extras';
 import { invariant } from '@pixi/react-invariant';
-import { getTextureFromProps, applyDefaultProps } from '../utils/props';
+import { applyDefaultProps } from '@pixi/react-utils';
+import { getTextureFromProps } from '../utils/getTextureFromProps';
 import type { PixiReactContainer, PixiReactSimpleRope, SimpleRopeProps } from '../types';
 
 const SimpleRope = (root: PixiReactContainer, props: SimpleRopeProps) =>

@@ -1,6 +1,6 @@
 import { TilingSprite as PixiTilingSprite } from '@pixi/sprite-tiling';
-import { getTextureFromProps, applyDefaultProps } from '../utils/props';
-import { parsePoint, pointsAreEqual } from '../utils/pixi';
+import { applyDefaultProps, parsePoint, pointsAreEqual } from '@pixi/react-utils';
+import { getTextureFromProps } from '../utils/getTextureFromProps';
 import type { PixiReactContainer, PixiReactTilingSprite, TilingSpriteProps } from '../types';
 
 const TilingSprite = (root: PixiReactContainer, props: TilingSpriteProps) =>

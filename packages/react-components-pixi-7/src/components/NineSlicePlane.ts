@@ -1,5 +1,6 @@
 import { NineSlicePlane as PixiNineSlicePlane } from '@pixi/mesh-extras';
-import { getTextureFromProps, applyDefaultProps } from '../utils/props';
+import { applyDefaultProps } from '@pixi/react-utils';
+import { getTextureFromProps } from '../utils/getTextureFromProps';
 import type { NineSlicePlaneProps, PixiReactContainer, PixiReactNineSlicePlane } from '../types';
 
 const NineSlicePlane = (root: PixiReactContainer, props: NineSlicePlaneProps) =>

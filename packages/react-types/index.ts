@@ -1,13 +1,22 @@
 import type React from 'react';
-import type { Component, ForwardRefExoticComponent, PropsWithoutRef, RefAttributes } from 'react';
+import type {
+    Component,
+    ForwardRefExoticComponent,
+    PropsWithoutRef,
+    RefAttributes,
+} from 'react';
 
 export type PropsType = { [key: string]: any };
 
 interface MinimalDisplayObject
 {
-    emit: (type: any, data: any) => void;
+    emit: (type: any, data?: any) => void;
     visible: boolean;
-    destroy: (opts: { children?: boolean; texture?: boolean; baseTexture?: boolean }) => void;
+    destroy: (opts: {
+        children?: boolean;
+        texture?: boolean;
+        baseTexture?: boolean;
+    }) => void;
 }
 
 // Defines a minimal expected type for a PIXI Container to allow for different implementations across PIXI versions
@@ -19,11 +28,27 @@ export interface MinimalContainer extends MinimalDisplayObject
     getChildIndex: (child: any) => number;
     setChildIndex: (child: any, index: number) => void;
     addChildAt: (child: any, index: number) => void;
+    on: (evt: any, handler: any) => void;
+    removeListener: (evt: any, handler: any) => void;
+}
+
+export interface MinimalPointData
+{
+    x: number;
+    y: number;
+}
+
+export interface MinimalPoint extends MinimalPointData
+{
+    copyFrom(p: MinimalPoint): this;
+    copyTo<T extends MinimalPoint>(p: T): T;
+    equals<T extends MinimalPointData>(p: T): boolean;
+    set(x?: number, y?: number): void;
 }
 
 export type LocalState<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = {
     root: Container | null;
     parent: Container | null;
@@ -45,7 +70,7 @@ export interface PixiReactMinimalExpandoContainer extends MinimalContainer
 // issue with circular references and the fact this version uses generics
 export type PixiReactExpandoContainer<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = {
     config?: lifeCycleConfigType;
     applyProps?: applyPropsType<PropsType, Instance>;
@@ -54,37 +79,56 @@ export type PixiReactExpandoContainer<
     __reactpixi?: LocalState<Container, Instance>;
 };
 
-type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+    T
+>() => T extends Y ? 1 : 2
+    ? A
+    : B;
 
 type ReadonlyKeys<T> = {
-    [P in keyof T]-?: IfEquals<{ [Q in P]: T[P] }, { -readonly [Q in P]: T[P] }, never, P>;
+    [P in keyof T]-?: IfEquals<
+    { [Q in P]: T[P] },
+    { -readonly [Q in P]: T[P] },
+    never,
+    P
+    >;
 }[keyof T];
 
-type AnySource<PixiTexture> = number | ImageSource | VideoSource | HTMLCanvasElement | PixiTexture;
+type AnySource<PixiTexture> =
+    | number
+    | ImageSource
+    | VideoSource
+    | HTMLCanvasElement
+    | PixiTexture;
 
 export type PointCoords = [number, number] | [number];
-export type PointLike<PixiPoint, PixiObservablePoint> =
-    | PixiPoint
-    | PixiObservablePoint
+export type PointLike<PixiIPoint extends MinimalPoint = MinimalPoint> =
+    | PixiIPoint
     | PointCoords
     | number
     | { x?: number; y?: number }
     | string;
 
-type WithPointLike<PixiPoint, PixiObservablePoint, T extends keyof any> = {
-    [P in T]: PointLike<PixiPoint, PixiObservablePoint>;
+type WithPointLike<PixiIPoint extends MinimalPoint, T extends keyof any> = {
+    [P in T]: PointLike<PixiIPoint>;
 };
 
 export type AttachFnType<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
-> = (parent: Container, self: Instance) => (parent: Container, self: Instance) => void;
+    Instance extends PixiReactMinimalExpandoContainer
+> = (
+    parent: Container,
+    self: Instance
+) => (parent: Container, self: Instance) => void;
 export type AttachType<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = string | AttachFnType<Container, Instance>;
 
-type WithAttach<Container extends PixiReactMinimalExpandoContainer, Instance extends PixiReactMinimalExpandoContainer> = {
+type WithAttach<
+    Container extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
+> = {
     attach?: AttachType<Container, Instance>;
 };
 
@@ -130,19 +174,21 @@ export interface WithSource<PixiTexture>
 
 export type InstanceProps<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = PropsType & WithAttach<Container, Instance>;
 
 // This helper is used to create types for the prop argument to React.FC
 export type ReactContainerProps<
-    PixiPoint,
-    PixiObservablePoint,
+    PixiIPoint extends MinimalPoint,
     Container extends PixiReactMinimalExpandoContainer,
     Instance extends PixiReactMinimalExpandoContainer,
-    Props = object,
+    Props = object
 > = Partial<
-Omit<Instance, 'children' | PointLikeProps | ReadonlyKeys<Instance> | keyof Props> &
-WithPointLike<PixiPoint, PixiObservablePoint, PointLikeProps>
+Omit<
+Instance,
+'children' | PointLikeProps | ReadonlyKeys<Instance> | keyof Props
+> &
+WithPointLike<PixiIPoint, PointLikeProps>
 > &
 WithAttach<Container, Instance> &
 Props &
@@ -151,7 +197,7 @@ InteractionEvents & { ref?: React.Ref<Instance> };
 // This helper is used to create types for the return argument of component lifecycle create
 export type PixiReactContainer<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = Instance & PixiReactExpandoContainer<Container, Instance>;
 
 export type UpdatePayload = Array<any> | null;
@@ -163,24 +209,35 @@ export type TimeoutHandle = ReturnType<typeof setTimeout>;
 // Defines a minimal expected type for PixiReactFiber to allow for different implementations across React versions
 export type createInstanceType<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
-> = (type: string, props: PropsType, rootContainer: Container, hostContext: any, internalHandle: any) => Instance;
+    Instance extends PixiReactMinimalExpandoContainer
+> = (
+    type: string,
+    props: PropsType,
+    rootContainer: Container,
+    hostContext: any,
+    internalHandle: any
+) => Instance;
 
 export type MinimalHostConfig<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = {
     supportsMutation: boolean;
     supportsPersistence: boolean;
     createInstance: createInstanceType<Container, Instance>;
-    createTextInstance(text: string, rootContainer: Container, hostContext: any, internalHandle: any): any;
+    createTextInstance(
+        text: string,
+        rootContainer: Container,
+        hostContext: any,
+        internalHandle: any
+    ): any;
     appendInitialChild(parentInstance: Container, child: Instance): void;
     finalizeInitialChildren(
         instance: Instance,
         type: string,
         props: PropsType,
         rootContainer: Container,
-        hostContext: any,
+        hostContext: any
     ): boolean;
     prepareUpdate(
         instance: Instance,
@@ -188,16 +245,23 @@ export type MinimalHostConfig<
         oldProps: PropsType,
         newProps: PropsType,
         rootContainer: Container,
-        hostContext: any,
+        hostContext: any
     ): UpdatePayload;
     shouldSetTextContent(type: string, props: PropsType): boolean;
     getRootHostContext(rootContainer: Container): any;
-    getChildHostContext(parentHostContext: any, type: string, rootContainer: Container): any;
+    getChildHostContext(
+        parentHostContext: any,
+        type: string,
+        rootContainer: Container
+    ): any;
     getPublicInstance(instance: Instance): Instance;
     prepareForCommit(containerInfo: Container): Record<string, any> | null;
     resetAfterCommit(containerInfo: Container): void;
     preparePortalMount(containerInfo: Container): void;
-    scheduleTimeout(fn: (...args: unknown[]) => unknown, delay?: number): TimeoutHandle;
+    scheduleTimeout(
+        fn: (...args: unknown[]) => unknown,
+        delay?: number
+    ): TimeoutHandle;
     cancelTimeout(id: TimeoutHandle): void;
     noTimeout: NoTimeout;
     supportsMicrotasks?: boolean;
@@ -213,20 +277,37 @@ export type MinimalHostConfig<
     detachDeletedInstance(node: Instance): void;
     appendChild?(parentInstance: Container, child: Instance): void;
     appendChildToContainer?(container: Container, child: Instance): void;
-    insertBefore?(parentInstance: Container, child: Instance, beforeChild: Container): void;
-    insertInContainerBefore?(container: Container, child: Instance, beforeChild: Container): void;
+    insertBefore?(
+        parentInstance: Container,
+        child: Instance,
+        beforeChild: Container
+    ): void;
+    insertInContainerBefore?(
+        container: Container,
+        child: Instance,
+        beforeChild: Container
+    ): void;
     removeChild?(parentInstance: Container, child: Instance): void;
     removeChildFromContainer?(container: Container, child: Instance): void;
     resetTextContent?(instance: Instance): void;
-    commitTextUpdate?(textInstance: Instance, oldText: string, newText: string): void;
-    commitMount?(instance: Instance, type: string, props: PropsType, internalInstanceHandle: any): void;
+    commitTextUpdate?(
+        textInstance: Instance,
+        oldText: string,
+        newText: string
+    ): void;
+    commitMount?(
+        instance: Instance,
+        type: string,
+        props: PropsType,
+        internalInstanceHandle: any
+    ): void;
     commitUpdate?(
         instance: Instance,
         updatePayload: UpdatePayload,
         type: string,
         prevProps: any,
         nextProps: any,
-        internalHandle: any,
+        internalHandle: any
     ): void;
     hideInstance?(instance: Instance): void;
     hideTextInstance?(textInstance: Instance): void;
@@ -241,21 +322,37 @@ export type MinimalHostConfig<
         newProps: PropsType,
         internalInstanceHandle: any,
         keepChildren: boolean,
-        recyclableInstance: Container,
+        recyclableInstance: Container
     ): Container;
     createContainerChildSet?(container: Container): any;
     appendChildToContainerChildSet?(childSet: any, child: Instance): void;
     finalizeContainerChildren?(container: Container, newChildren: any): void;
     replaceContainerChildren?(container: Container, newChildren: any): void;
-    cloneHiddenInstance?(instance: Instance, type: string, props: PropsType, internalInstanceHandle: any): Instance;
-    cloneHiddenTextInstance?(instance: Instance, text: any, internalInstanceHandle: any): Instance;
+    cloneHiddenInstance?(
+        instance: Instance,
+        type: string,
+        props: PropsType,
+        internalInstanceHandle: any
+    ): Instance;
+    cloneHiddenTextInstance?(
+        instance: Instance,
+        text: any,
+        internalInstanceHandle: any
+    ): Instance;
     supportsHydration: boolean;
-    canHydrateInstance?(instance: Instance, type: string, props: PropsType): null | Instance;
+    canHydrateInstance?(
+        instance: Instance,
+        type: string,
+        props: PropsType
+    ): null | Instance;
     canHydrateTextInstance?(instance: Instance, text: string): null | Instance;
     canHydrateSuspenseInstance?(instance: Instance): null | Instance;
     isSuspenseInstancePending?(instance: Instance): boolean;
     isSuspenseInstanceFallback?(instance: Instance): boolean;
-    registerSuspenseInstanceRetry?(instance: Instance, callback: () => void): void;
+    registerSuspenseInstanceRetry?(
+        instance: Instance,
+        callback: () => void
+    ): void;
     getNextHydratableSibling?(instance: Instance): null | Instance;
     getFirstHydratableChild?(parentInstance: Container): null | Container;
     hydrateInstance?(
@@ -264,41 +361,75 @@ export type MinimalHostConfig<
         props: PropsType,
         rootContainerInstance: Container,
         hostContext: any,
-        internalInstanceHandle: any,
+        internalInstanceHandle: any
     ): null | any[];
-    hydrateTextInstance?(textInstance: Instance, text: string, internalInstanceHandle: any): boolean;
-    hydrateSuspenseInstance?(suspenseInstance: Instance, internalInstanceHandle: any): void;
-    getNextHydratableInstanceAfterSuspenseInstance?(suspenseInstance: Instance): null | Instance;
+    hydrateTextInstance?(
+        textInstance: Instance,
+        text: string,
+        internalInstanceHandle: any
+    ): boolean;
+    hydrateSuspenseInstance?(
+        suspenseInstance: Instance,
+        internalInstanceHandle: any
+    ): void;
+    getNextHydratableInstanceAfterSuspenseInstance?(
+        suspenseInstance: Instance
+    ): null | Instance;
     getParentSuspenseInstance?(targetInstance: any): null | Instance;
     commitHydratedContainer?(container: Container): void;
     commitHydratedSuspenseInstance?(suspenseInstance: Instance): void;
-    didNotMatchHydratedContainerTextInstance?(parentContainer: Container, textInstance: Instance, text: string): void;
+    didNotMatchHydratedContainerTextInstance?(
+        parentContainer: Container,
+        textInstance: Instance,
+        text: string
+    ): void;
     didNotMatchHydratedTextInstance?(
         parentType: any,
         parentProps: PropsType,
         parentInstance: Container,
         textInstance: Instance,
-        text: string,
+        text: string
     ): void;
-    didNotHydrateContainerInstance?(parentContainer: Container, instance: Instance): void;
-    didNotHydrateInstance?(parentType: any, parentProps: PropsType, parentInstance: Container, instance: Instance): void;
-    didNotFindHydratableContainerInstance?(parentContainer: Container, type: string, props: PropsType): void;
-    didNotFindHydratableContainerTextInstance?(parentContainer: Container, text: string): void;
-    didNotFindHydratableContainerSuspenseInstance?(parentContainer: Container): void;
+    didNotHydrateContainerInstance?(
+        parentContainer: Container,
+        instance: Instance
+    ): void;
+    didNotHydrateInstance?(
+        parentType: any,
+        parentProps: PropsType,
+        parentInstance: Container,
+        instance: Instance
+    ): void;
+    didNotFindHydratableContainerInstance?(
+        parentContainer: Container,
+        type: string,
+        props: PropsType
+    ): void;
+    didNotFindHydratableContainerTextInstance?(
+        parentContainer: Container,
+        text: string
+    ): void;
+    didNotFindHydratableContainerSuspenseInstance?(
+        parentContainer: Container
+    ): void;
     didNotFindHydratableInstance?(
         parentType: any,
         parentProps: PropsType,
         parentInstance: Container,
         type: string,
-        props: PropsType,
+        props: PropsType
     ): void;
     didNotFindHydratableTextInstance?(
         parentType: any,
         parentProps: PropsType,
         parentInstance: Container,
-        text: string,
+        text: string
     ): void;
-    didNotFindHydratableSuspenseInstance?(parentType: any, parentProps: PropsType, parentInstance: Container): void;
+    didNotFindHydratableSuspenseInstance?(
+        parentType: any,
+        parentProps: PropsType,
+        parentInstance: Container
+    ): void;
     errorHydratingContainer?(parentContainer: Container): void;
 };
 
@@ -311,15 +442,17 @@ export type MinimalPixiReactFiber<Container extends MinimalContainer> = {
         concurrentUpdatesByDefaultOverride: null | boolean,
         identifierPrefix: string,
         onRecoverableError: (error: Error) => void,
-        transitionCallbacks: any,
+        transitionCallbacks: any
     ) => any;
     updateContainer: (
         element: React.ReactNode | null,
         container: any,
         parentComponent?: Component<any, any> | null,
-        callback?: (() => void) | null,
+        callback?: (() => void) | null
     ) => number;
-    getPublicRootInstance: (container: any) => Component<any, any> | Container | null;
+    getPublicRootInstance: (
+        container: any
+    ) => Component<any, any> | Container | null;
 };
 
 export type ReactRoot = {
@@ -332,17 +465,24 @@ export type RootEntry = {
     reactRoot: ReactRoot;
 };
 
-export type Roots<Container extends MinimalContainer> = Map<Container, RootEntry>;
+export type Roots<Container extends MinimalContainer> = Map<
+Container,
+RootEntry
+>;
 
-export type CreateRootType<Container extends MinimalContainer> = (container: Container) => ReactRoot;
+export type CreateRootType<Container extends MinimalContainer> = (
+    container: Container
+) => ReactRoot;
 
 export type RenderType<Container extends MinimalContainer> = (
     element: JSX.Element,
     container: Container,
-    callback?: () => void,
+    callback?: () => void
 ) => any;
 
-export type UnmountComponentAtNodeType<Container extends MinimalContainer> = (container: Container) => void;
+export type UnmountComponentAtNodeType<Container extends MinimalContainer> = (
+    container: Container
+) => void;
 
 type MountUnmountType<Application> = (app: Application) => void;
 
@@ -416,10 +556,11 @@ export type StageProps<Application, ApplicationOptions> = HTMLCanvasProps & {
     options?: Partial<ApplicationOptions>;
 };
 
-export type StagePropsWithFiber<Application, ApplicationOptions, PixiContainer extends MinimalContainer> = StageProps<
-Application,
-ApplicationOptions
-> & {
+export type StagePropsWithFiber<
+    Application,
+    ApplicationOptions,
+    PixiContainer extends MinimalContainer
+> = StageProps<Application, ApplicationOptions> & {
     pixiReactFiberInstance: MinimalPixiReactFiber<PixiContainer>;
 };
 
@@ -450,24 +591,29 @@ ApplicationOptions
 // RefAttributes<IBaseStage<Application, ApplicationOptions, PixiContainer, Ticker>>
 // >;
 
-export type ReactStageComponent<BaseStage, Application, ApplicationOptions> = ForwardRefExoticComponent<
-PropsWithoutRef<StageProps<Application, ApplicationOptions>> & RefAttributes<BaseStage>
->;
+export type ReactStageComponent<BaseStage, Application, ApplicationOptions> =
+    ForwardRefExoticComponent<
+    PropsWithoutRef<StageProps<Application, ApplicationOptions>> &
+    RefAttributes<BaseStage>
+    >;
 
-export type applyPropsType<P extends PropsType, Instance extends PixiReactMinimalExpandoContainer> = (
+export type applyPropsType<
+    P extends PropsType,
+    Instance extends PixiReactMinimalExpandoContainer
+> = (
     instance: Instance,
     oldProps: Readonly<P>,
-    newProps: Readonly<P>,
+    newProps: Readonly<P>
 ) => boolean;
 
 export type didMountType<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = (instance: Instance, parent: Container) => void;
 
 export type willUnmountType<
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = (instance: Instance, parent: Container) => void;
 
 export type lifeCycleConfigType = {
@@ -500,13 +646,13 @@ export type lifeCycleConfigType = {
 export type createCustomComponentType<
     P extends PropsType,
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 > = (root: Container, props: P) => Instance;
 
 export interface ICustomComponent<
     P extends PropsType,
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 >
 {
     /**
@@ -556,18 +702,20 @@ export interface ICustomComponent<
 export type ComponentType<
     P extends PropsType,
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
-> = createCustomComponentType<P, Container, Instance> | ICustomComponent<P, Container, Instance>;
+    Instance extends PixiReactMinimalExpandoContainer
+> =
+    | createCustomComponentType<P, Container, Instance>
+    | ICustomComponent<P, Container, Instance>;
 
 export type ComponentsType = Record<string, ComponentType<any, any, any>>;
 
 export type PixiComponentType = <
     P extends PropsType,
     Container extends PixiReactMinimalExpandoContainer,
-    Instance extends PixiReactMinimalExpandoContainer,
+    Instance extends PixiReactMinimalExpandoContainer
 >(
     type: string,
-    lifecycle: ComponentType<P, Container, Instance>,
+    lifecycle: ComponentType<P, Container, Instance>
 ) => React.ComponentType<P>;
 
 export type PixiReactRenderEventType =

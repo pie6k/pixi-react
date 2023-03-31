@@ -12,7 +12,7 @@ import type {
     StageProps,
     StagePropsWithFiber,
 } from '@pixi/react-types';
-import { PROPS_DISPLAY_OBJECT } from '../utils/props';
+import { PROPS_DISPLAY_OBJECT } from '@pixi/react-utils';
 import type { PixiReactContainer } from '../types';
 import { AppProvider } from './provider';
 

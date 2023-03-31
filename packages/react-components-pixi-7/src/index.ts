@@ -1,4 +1,5 @@
 /// <reference path="./global.d.ts" />
+import { applyDefaultProps, eventHandlers } from '@pixi/react-utils';
 import type { ComponentsType, PixiComponentType } from '@pixi/react-types';
 
 import {
@@ -14,7 +15,6 @@ import {
     Text as TextComponent,
     TilingSprite as TilingSpriteComponent,
 } from './components';
-import { applyDefaultProps } from './utils/props';
 
 import type {
     PixiReactContainer,
@@ -41,10 +41,9 @@ import type {
 export { Context as AppContext, AppProvider, AppConsumer, withPixiApp } from './stage/provider';
 export { useTick, useApp } from './hooks';
 export { withFilters } from './hoc';
-export { eventHandlers } from './utils/pixi';
 export { configurePixiReactStage } from './stage';
 export { configurePixiReactRenderAPI } from './render';
-export { applyDefaultProps };
+export { applyDefaultProps, eventHandlers };
 export type { PixiReactContainer, ReactStageComponent };
 
 /**

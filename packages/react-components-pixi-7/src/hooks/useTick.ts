@@ -1,7 +1,7 @@
 import { invariant } from '@pixi/react-invariant';
-import type { Ticker } from '@pixi/ticker';
 import { useEffect, useRef } from 'react';
 import { useApp } from './useApp';
+import type { Ticker } from '@pixi/ticker';
 
 type UseTickCallback = (delta: number, ticker: Ticker) => void;
 

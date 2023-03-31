@@ -1,5 +1,6 @@
 import { Sprite as PixiSprite } from '@pixi/sprite';
-import { getTextureFromProps, applyDefaultProps } from '../utils/props';
+import { applyDefaultProps } from '@pixi/react-utils';
+import { getTextureFromProps } from '../utils/getTextureFromProps';
 import type { PixiReactContainer, PixiReactSprite, SpriteProps } from '../types';
 
 const Sprite = (root: PixiReactContainer, props: SpriteProps) =>

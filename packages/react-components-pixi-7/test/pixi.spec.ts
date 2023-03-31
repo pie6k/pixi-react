@@ -1,6 +1,7 @@
 import { Point, ObservablePoint } from '@pixi/math';
 import { Container } from '@pixi/display';
-import { parsePoint, isPointType, eventHandlers, setValue } from '../src/utils/pixi';
+// TODO: move this test into react-utils?
+import { parsePoint, isPointType, eventHandlers, setValue } from '@pixi/react-utils';
 import type { PointLike } from '../src/types';
 
 const noop = () => {};

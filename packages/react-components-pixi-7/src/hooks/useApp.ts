@@ -1,5 +1,5 @@
-import { Application } from '@pixi/app';
 import { useContext } from 'react';
+import { Application } from '@pixi/app';
 import { invariant } from '@pixi/react-invariant';
 import { Context } from '../stage/provider';
 

@@ -2,7 +2,7 @@ import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { invariant } from '@pixi/react-invariant';
 import type { Filter } from '@pixi/core';
-import { hasKey, not } from '../utils/fp';
+import { hasKey, not } from '@pixi/react-utils';
 import type { Container } from '@pixi/display';
 import type { BaseReactContainerProps } from '../types';
 

@@ -1,6 +1,6 @@
 import { invariant } from '@pixi/react-invariant';
 import { Graphics as PixiGraphics } from '@pixi/graphics';
-import { applyDefaultProps } from '../utils/props';
+import { applyDefaultProps } from '@pixi/react-utils';
 import type { GraphicsProps, PixiReactContainer, PixiReactGraphics } from '../types';
 
 const Graphics = (_root: PixiReactContainer, { geometry }: GraphicsProps) =>

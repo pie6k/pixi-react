@@ -1,0 +1,54 @@
+{
+  "name": "@pixi/react-utils",
+  "version": "7.0.2",
+  "description": "Utilities for pixi-react",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pixijs/pixi-react.git",
+    "directory": "packages/react-utils"
+  },
+  "license": "MIT",
+  "sideEffects": false,
+  "main": "index.js",
+  "module": "module.js",
+  "jsnext:main": "module.js",
+  "typings": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./module.js"
+      },
+      "require": {
+        "types": "./dist/types/index.d.ts",
+        "default": "./index.js"
+      }
+    }
+  },
+  "files": [
+    "dist/",
+    "LICENSE",
+    "README.md",
+    "index.d.ts",
+    "index.js",
+    "module.js"
+  ],
+  "scripts": {
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "npm run build:types && npm run build:dev && npm run build:prod",
+    "build:types": "tsc -p tsconfig.types.json",
+    "build:dev": "cross-env NODE_ENV=development rollup -c",
+    "build:prod": "cross-env NODE_ENV=production rollup -c"
+  },
+  "dependencies": {
+    "@pixi/react-invariant": "*"
+  },
+  "devDependencies": {
+    "@pixi/react-types": "*"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "gitHead": "6d5b98bc6d7eafd1b0016e60a725b2b6c9f46a33"
+}

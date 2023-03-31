@@ -1,7 +1,11 @@
 import { invariant } from '@pixi/react-invariant';
 import isNil from 'lodash.isnil';
-import type { PixiReactContainer, PointCoords, PointLike } from '../types';
-import type { IPoint } from '@pixi/core';
+import type {
+    MinimalPoint,
+    PixiReactMinimalExpandoContainer,
+    PointCoords,
+    PointLike,
+} from '@pixi/react-types';
 
 /**
  * Parse PIXI point value to array of coordinates
@@ -78,7 +82,7 @@ export function pointsAreEqual(oldValue: PointCoords, newValue: PointCoords)
  * @param {*} value
  * @returns {boolean}
  */
-export function isPointType(value: any): value is IPoint
+export function isPointType(value: any): value is MinimalPoint
 {
     // avoid instanceof check for perf
     return (
@@ -134,7 +138,11 @@ export const eventHandlers = [
  * @param {string} prop
  * @param {*} value
  */
-export function setValue(instance: PixiReactContainer, prop: string, value: any)
+export function setValue<Instance extends PixiReactMinimalExpandoContainer>(
+    instance: Instance,
+    prop: string,
+    value: any
+)
 {
     type InstanceProperty = keyof typeof instance;
 
@@ -150,15 +158,20 @@ export function setValue(instance: PixiReactContainer, prop: string, value: any)
     {
         // parse value if a non-Point type is being assigned to a Point type
         const coordinates = parsePoint(value);
+        const invariantFormat = [
+            'The property `%s` is a `PIXI.Point` or `PIXI.ObservablePoint` and must be set to a comma-separated string of',
+            'either 1 or 2 coordinates, a 1 or 2 element array containing coordinates, or a PIXI Point/ObservablePoint.',
+            'If only one coordinate is given then X and Y will be set to the provided value. Received: `%s` of type `%s`.',
+        ].join(' ');
 
         invariant(
-            typeof coordinates !== 'undefined' && coordinates.length > 0 && coordinates.length < 3,
-            'The property `%s` is a `PIXI.Point` or `PIXI.ObservablePoint` and must be set to a comma-separated string of '
-                + 'either 1 or 2 coordinates, a 1 or 2 element array containing coordinates, or a PIXI Point/ObservablePoint. '
-                + 'If only one coordinate is given then X and Y will be set to the provided value. Received: `%s` of type `%s`.',
+            typeof coordinates !== 'undefined'
+                && coordinates.length > 0
+                && coordinates.length < 3,
+            invariantFormat,
             prop,
             JSON.stringify(value),
-            typeof value,
+            typeof value
         );
 
         const [x, y] = coordinates;

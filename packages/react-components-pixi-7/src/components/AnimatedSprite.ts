@@ -2,9 +2,8 @@ import { Texture } from '@pixi/core';
 import type { FrameObject } from '@pixi/sprite-animated';
 import { AnimatedSprite as PixiAnimatedSprite } from '@pixi/sprite-animated';
 import { invariant } from '@pixi/react-invariant';
-import { applyDefaultProps } from '../utils/props';
+import { applyDefaultProps, isArrayWithLength } from '@pixi/react-utils';
 import type { AnimatedSpriteProps, AnimatedSpriteTexturesProp, PixiReactAnimatedSprite, PixiReactContainer } from '../types';
-import { isArrayWithLength } from '../utils/fp';
 
 const isTexture = (maybeTexture: any): maybeTexture is Texture => maybeTexture instanceof Texture;
 const isFrameObject = (maybeFrameObject: any): maybeFrameObject is FrameObject => Boolean(maybeFrameObject?.texture);

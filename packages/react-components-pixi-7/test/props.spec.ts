@@ -1,6 +1,8 @@
 import { Container } from '@pixi/display';
 import { Texture } from '@pixi/core';
-import { getTextureFromProps, applyDefaultProps, PROPS_DISPLAY_OBJECT, PROPS_RESERVED } from '../src/utils/props';
+// TODO: move this test into react-utils?
+import { applyDefaultProps, PROPS_DISPLAY_OBJECT, PROPS_RESERVED } from '@pixi/react-utils';
+import { getTextureFromProps } from '../src/utils/getTextureFromProps';
 import { emptyTexture } from './__fixtures__/textures';
 import type { FederatedPointerEvent } from '@pixi/events';
 
@@ -182,11 +184,12 @@ describe('props', () =>
             expect(spyAdd).toHaveBeenCalledTimes(2);
         });
 
-        test('invalid instance', () =>
-        {
-            // @ts-ignore - deliberately testing bad runtime use case
-            expect(() => applyDefaultProps()).toThrow('instance needs to be typeof `DisplayObject`, got `undefined`');
-        });
+        // TODO: can we do runtime type check without importing pixi.js?
+        // test('invalid instance', () =>
+        // {
+        //     // @ts-ignore - deliberately testing bad runtime use case
+        //     expect(() => applyDefaultProps()).toThrow('instance needs to be typeof `DisplayObject`, got `undefined`');
+        // });
 
         test('skip reserved props', () =>
         {

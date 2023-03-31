@@ -95,7 +95,7 @@ describe('stage', () =>
     {
         let app: Application;
 
-        const renderAutoDensity = (options: IApplicationOptions) =>
+        const renderAutoDensity = (options: Partial<IApplicationOptions>) =>
             renderer.create(
                 <Stage
                     options={{

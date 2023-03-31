@@ -9,7 +9,6 @@ import type { ParticleContainer } from '@pixi/particle-container';
 import type { Sprite } from '@pixi/sprite';
 import type { TilingSprite } from '@pixi/sprite-tiling';
 import type { Text, TextStyle } from '@pixi/text';
-import type { ObservablePoint, Point } from '@pixi/math';
 import type {
     PropsType,
     InteractionEvents,
@@ -58,11 +57,10 @@ export type PixiReactTexture = Texture & {
 };
 
 type WithSource = GenericWithSource<Texture>;
-export type PointLike = GenericPointLike<Point, ObservablePoint>;
+export type PointLike = GenericPointLike<IPoint>;
 
 export type BaseReactContainerProps<PixiInstance extends MinimalContainer, Props = object> = GenericReactContainerProps<
-Point,
-ObservablePoint,
+IPoint,
 Container,
 PixiInstance,
 Props

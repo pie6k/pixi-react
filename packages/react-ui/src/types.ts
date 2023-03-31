@@ -4,7 +4,7 @@ import type {
     PixiReactContainer as BasePixiReactContainer,
     ReactContainerProps as GenericReactContainerProps,
 } from '@pixi/react-types';
-import type { ObservablePoint, Point } from '@pixi/math';
+import type { IPoint } from '@pixi/math';
 
 // TODO: There's a lot here that's duped from react-components-pixi-7
 // That's because these concrete types depend on the imported version of pixi
@@ -12,13 +12,13 @@ import type { ObservablePoint, Point } from '@pixi/math';
 // Could/should we define these in a react-types-pixi-7 module!?
 // Or should we just import directly from 'react-components-pixi-7'?
 
-export type BaseReactContainerProps<PixiContainer extends MinimalContainer, Props = object> = GenericReactContainerProps<
-Point,
-ObservablePoint,
-PixiContainer,
-Props
->;
+export type { BasePixiReactContainer };
+
+export type BaseReactContainerProps<
+    PixiInstance extends MinimalContainer,
+    Props = object
+> = GenericReactContainerProps<IPoint, Container, PixiInstance, Props>;
 
 export type ReactContainerProps = BaseReactContainerProps<Container>;
 
-export type PixiReactContainer = BasePixiReactContainer<Container>;
+export type PixiReactContainer = BasePixiReactContainer<Container, Container>;
