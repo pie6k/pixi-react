@@ -1,4 +1,4 @@
-import { cloneElement, useEffect, useRef, useMemo, useCallback } from 'react';
+import { cloneElement, useEffect, useMemo, useCallback } from 'react';
 import { Button as PixiButton } from '@pixi/ui';
 import type { FederatedPointerEvent } from '@pixi/events';
 import type { Container } from '@pixi/display';
