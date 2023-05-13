@@ -4,7 +4,7 @@ import { Container as PixiContainer } from '@pixi/display';
 import { Text as PixiText } from '@pixi/text';
 import { createRoot, roots } from '../src/render';
 import hostconfig from '../src/reconciler/hostconfig';
-import { createElement } from '../src/utils/element';
+import { createElement } from 'packages/react/src/utils/PixiComponent';
 import { Container, Text } from '../src';
 import { getCall, mockToSpy } from './__utils__/mock';
 

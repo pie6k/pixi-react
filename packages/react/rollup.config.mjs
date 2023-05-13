@@ -1,8 +1,9 @@
 import alias from '@rollup/plugin-alias';
+import copy from 'rollup-plugin-copy';
 
 import {
     getBuildFormat,
-    getRollupConfig,
+    getRollupTSConfig,
     isProductionBuild,
 } from '../../shared/getRollupConfig.mjs';
 
@@ -10,7 +11,7 @@ const format = getBuildFormat();
 const buildType = isProductionBuild() ? '' : '-dev';
 
 const external = [
-    '@babel/runtime',
+    '@pixi/react-invariant',
     '@pixi/app',
     '@pixi/assets',
     '@pixi/constants',
@@ -29,43 +30,49 @@ const external = [
     '@pixi/text',
     '@pixi/text-bitmap',
     '@pixi/ticker',
+    'lodash.isnil',
+    'lodash.times',
     'prop-types',
     'react',
     'react-dom',
+    'react-reconciler',
 ];
 
 let builds;
 
+const mergeOptions = {
+    beforePlugins: [
+        alias({
+            entries: {
+                '@react-spring/animated':
+                    '../../shared/react-spring-create-host.js',
+            },
+        }),
+        copy({
+            targets: [{ src: 'src/global.d.ts', dest: 'dist/types' }],
+        }),
+    ],
+    external,
+};
+
 if (format)
 {
     builds = [
-        getRollupConfig(`dist/index.${format}${buildType}.js`, format, {
-            beforePlugins: [
-                alias({
-                    entries: {
-                        '@react-spring/animated':
-                            '../../shared/react-spring-create-host.js',
-                    },
-                }),
-            ],
-            external,
-        }),
+        getRollupTSConfig(
+            `dist/index.${format}${buildType}.js`,
+            format,
+            mergeOptions
+        ),
     ];
 }
 else
 {
     builds = ['cjs', 'es'].map((format) =>
-        getRollupConfig(`dist/index.${format}${buildType}.js`, format, {
-            beforePlugins: [
-                alias({
-                    entries: {
-                        '@react-spring/animated':
-                            '../../shared/react-spring-create-host.js',
-                    },
-                }),
-            ],
-            external,
-        })
+        getRollupTSConfig(
+            `dist/index.${format}${buildType}.js`,
+            format,
+            mergeOptions
+        )
     );
 }
 

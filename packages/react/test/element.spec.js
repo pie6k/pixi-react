@@ -12,7 +12,7 @@ import { Point } from '@pixi/math';
 import React from 'react';
 import { render } from '@testing-library/react';
 
-import { createElement, TYPES, TYPES_INJECTED, PixiComponent } from '../src/utils/element';
+import { createElement, TYPES, TYPES_INJECTED, PixiComponent } from 'packages/react/src/utils/PixiComponent';
 import Stage from '../src/stage';
 
 import { emptyTexture } from './__fixtures__/textures';

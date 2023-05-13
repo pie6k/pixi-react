@@ -13,6 +13,7 @@
     "noUnusedParameters": true,
     "pretty": true,
     "resolveJsonModule": true,
+    "rootDir": "./src",
     "sourceMap": true,
     "strict": true,
     "target": "ESNext",
@@ -24,6 +25,7 @@
     "dist",
     "node_modules"
   ],
+  "include": ["src/**/*"],
   "ts-node": {
     "files": true,
     "compilerOptions": {
@@ -31,3 +33,4 @@
     }
   }
 }
+
