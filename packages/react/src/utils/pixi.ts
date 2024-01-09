@@ -1,7 +1,7 @@
 import isNil from 'lodash.isnil';
 import { invariant } from './invariant';
+
 import type {
-    MinimalPoint,
     PixiReactMinimalExpandoContainer,
     PointCoords,
     PointLike,
@@ -82,7 +82,7 @@ export function pointsAreEqual(oldValue: PointCoords, newValue: PointCoords)
  * @param {*} value
  * @returns {boolean}
  */
-export function isPointType(value: any): value is MinimalPoint
+export function isPointType(value: any): value is PointLike
 {
     // avoid instanceof check for perf
     return (

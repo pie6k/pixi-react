@@ -1,3 +1,22 @@
+import type {
+    AnimatedSprite,
+    Application,
+    ApplicationOptions,
+    BitmapText,
+    Container,
+    FrameObject,
+    Graphics,
+    MeshRope,
+    MeshSimple,
+    NineSliceSprite,
+    PointLike,
+    Sprite,
+    Text,
+    TextStyle,
+    Texture,
+    TilingSprite,
+    Topology
+} from 'pixi.js';
 import type React from 'react';
 import type {
     ForwardRefExoticComponent,
@@ -5,19 +24,6 @@ import type {
     RefAttributes,
 } from 'react';
 import type { HostConfig, Reconciler } from 'react-reconciler';
-import type { Container } from '@pixi/display';
-import type { IPoint, Resource, Texture } from '@pixi/core';
-import type { AnimatedSprite, FrameObject } from '@pixi/sprite-animated';
-import type { Graphics } from '@pixi/graphics';
-import type { BitmapText, IBitmapTextStyle } from '@pixi/text-bitmap';
-import type { NineSlicePlane, SimpleMesh, SimpleRope } from '@pixi/mesh-extras';
-import type { ParticleContainer } from '@pixi/particle-container';
-import type { Sprite } from '@pixi/sprite';
-import type { TilingSprite } from '@pixi/sprite-tiling';
-import type { Text, TextStyle } from '@pixi/text';
-import type { Application, IApplicationOptions } from '@pixi/app';
-import type { DRAW_MODES } from '@pixi/constants';
-
 // TODO: this is a circular dependency, but writing a working interface for BaseStage is a nightmare
 import type { BaseStage } from './stage';
 
@@ -29,46 +35,9 @@ import type { BaseStage } from './stage';
 
 export type PropsType = { [key: string]: any };
 
-/**
- * Minimal stuff maybe isn't required since we aren't modular anymore?
- */
-
-interface MinimalDisplayObject
-{
-    emit: (type: any, data?: any) => void;
-    visible: boolean;
-    destroy: (opts: {
-        children?: boolean;
-        texture?: boolean;
-        baseTexture?: boolean;
-    }) => void;
-}
-
 // Defines a minimal expected type for a PIXI Container to allow for different implementations across PIXI versions
-export interface MinimalContainer extends MinimalDisplayObject
+export interface MinimalContainer extends Container
 {
-    children: any[];
-    addChild: (...children: any[]) => any;
-    removeChild: (child: any) => void;
-    getChildIndex: (child: any) => number;
-    setChildIndex: (child: any, index: number) => void;
-    addChildAt: (child: any, index: number) => void;
-    on: (evt: any, handler: any) => void;
-    removeListener: (evt: any, handler: any) => void;
-}
-
-export interface MinimalPointData
-{
-    x: number;
-    y: number;
-}
-
-export interface MinimalPoint extends MinimalPointData
-{
-    copyFrom(p: MinimalPoint): this;
-    copyTo<T extends MinimalPoint>(p: T): T;
-    equals<T extends MinimalPointData>(p: T): boolean;
-    set(x?: number, y?: number): void;
 }
 
 export type LocalState<
@@ -127,15 +96,15 @@ type AnySource<PixiTexture> =
     | PixiTexture;
 
 export type PointCoords = [number, number] | [number];
-export type GenericPointLike<PixiIPoint extends MinimalPoint = MinimalPoint> =
-    | PixiIPoint
+export type GenericPointLike<PixiPointLike extends PointLike = PointLike> =
+    | PixiPointLike
     | PointCoords
     | number
     | { x?: number; y?: number }
     | string;
 
-type WithPointLike<PixiIPoint extends MinimalPoint, T extends keyof any> = {
-    [P in T]: GenericPointLike<PixiIPoint>;
+type WithPointLike<PixiPointLike extends PointLike, T extends keyof any> = {
+    [P in T]: GenericPointLike<PixiPointLike>;
 };
 
 export type AttachFnType<
@@ -204,7 +173,7 @@ export type InstanceProps<
 
 // This helper is used to create types for the prop argument to React.FC
 export type GenericReactContainerProps<
-    PixiIPoint extends MinimalPoint,
+    PixiPointLike extends PointLike,
     Container extends PixiReactMinimalExpandoContainer,
     Instance extends PixiReactMinimalExpandoContainer,
     Props = object
@@ -213,7 +182,7 @@ Omit<
 Instance,
 'children' | PointLikeProps | ReadonlyKeys<Instance> | keyof Props
 > &
-WithPointLike<PixiIPoint, PointLikeProps>
+WithPointLike<PixiPointLike, PointLikeProps>
 > &
 WithAttach<Container, Instance> &
 Props &
@@ -308,10 +277,8 @@ export type GenericUnmountComponentAtNodeType<
 
 type MountUnmountType<Application> = (app: Application) => void;
 
-export type DisplayObjectSettableProperty =
+export type ContainerSettableProperty =
     | 'alpha'
-    | 'buttonMode'
-    | 'cacheAsBitmap'
     | 'cursor'
     | 'filterArea'
     | 'filters'
@@ -324,10 +291,14 @@ export type DisplayObjectSettableProperty =
     | 'rotation'
     | 'scale'
     | 'skew'
-    | 'transform'
     | 'visible'
     | 'x'
-    | 'y';
+    | 'y'
+    | 'boundsArea'
+    | 'isRenderGroup'
+    | 'blendMode'
+    | 'tint'
+    | 'angle';
 
 type InteractionEventTypes =
     | 'click'
@@ -389,8 +360,8 @@ export type GenericStagePropsWithFiber<
 };
 
 // TODO: Is it possible to write a forwardRef compatible interface for BaseStage?
-// export interface IBaseStage<Application, IApplicationOptions, PixiContainer extends MinimalContainer, Ticker>
-//     extends React.Component<Required<StagePropsWithFiber<Application, IApplicationOptions, PixiContainer>>>
+// export interface IBaseStage<Application, ApplicationOptions, PixiContainer extends MinimalContainer, Ticker>
+//     extends React.Component<Required<StagePropsWithFiber<Application, ApplicationOptions, PixiContainer>>>
 // {
 //     _canvas: HTMLCanvasElement | null;
 //     _mediaQuery: MediaQueryList | null;
@@ -463,10 +434,10 @@ export type lifeCycleConfigType = {
     destroyTexture?: boolean;
 
     /**
-     * Destroy underlying BaseTexture instance
+     * Destroy underlying TextureSource instance
      * @default false
      */
-    destroyBaseTexture?: boolean;
+    destroyTextureSource?: boolean;
 };
 
 // Used in place of ICustomComponent for internal components
@@ -572,16 +543,12 @@ AnimatedSprite
 export type PixiReactBitmapText = BasePixiReactContainer<Container, BitmapText>;
 export type PixiReactContainer = BasePixiReactContainer<Container, Container>;
 export type PixiReactGraphics = BasePixiReactContainer<Container, Graphics>;
-export type PixiReactNineSlicePlane = BasePixiReactContainer<
+export type PixiReactNineSliceSprite = BasePixiReactContainer<
 Container,
-NineSlicePlane
+NineSliceSprite
 >;
-export type PixiReactParticleContainer = BasePixiReactContainer<
-Container,
-ParticleContainer
->;
-export type PixiReactSimpleMesh = BasePixiReactContainer<Container, SimpleMesh>;
-export type PixiReactSimpleRope = BasePixiReactContainer<Container, SimpleRope>;
+export type PixiReactMeshSimple = BasePixiReactContainer<Container, MeshSimple>;
+export type PixiReactMeshRope = BasePixiReactContainer<Container, MeshRope>;
 export type PixiReactSprite = BasePixiReactContainer<Container, Sprite>;
 export type PixiReactText = BasePixiReactContainer<Container, Text>;
 export type PixiReactTilingSprite = BasePixiReactContainer<
@@ -596,12 +563,11 @@ export type PixiReactTexture = Texture & {
 };
 
 type WithSource = GenericWithSource<Texture>;
-export type PointLike = GenericPointLike<IPoint>;
 
 export type BaseReactContainerProps<
     PixiInstance extends MinimalContainer,
     Props = object
-> = GenericReactContainerProps<IPoint, Container, PixiInstance, Props>;
+> = GenericReactContainerProps<PointLike, Container, PixiInstance, Props>;
 
 // These are types for all of the React props each of the predefined Pixi React
 // Components requires, the first definitions are properties specific to the
@@ -611,7 +577,7 @@ export type BaseReactContainerProps<
 // TODO: do some of these props just come from the PIXI components?
 // Compare with original handwritten types
 // Might also be nicer if these were colocated with the components themselves
-export type AnimatedSpriteTexturesProp = Texture<Resource>[] | FrameObject[];
+export type AnimatedSpriteTexturesProp = Texture[] | FrameObject[];
 export type AnimatedSpriteProps = PropsType & {
     textures?: AnimatedSpriteTexturesProp;
     images?: string[];
@@ -620,60 +586,52 @@ export type AnimatedSpriteProps = PropsType & {
 };
 export type BitmapTextProps = PropsType & {
     text: string;
-    style: Partial<IBitmapTextStyle>;
+    style: Partial<TextStyle>;
 };
 export type SpriteProps = PropsType & WithSource;
 export type TextProps = PropsType &
 WithSource & {
     text?: string;
     style?: Partial<TextStyle>;
-    isSprite?: boolean;
 };
 export type GraphicsProps = PropsType & {
     draw?(graphics: Graphics): void;
     geometry?: Graphics;
 };
-export type NineSlicePlaneProps = PropsType &
+export type NineSliceSpriteProps = PropsType &
 WithSource & {
     leftWidth?: number;
     topWidth?: number;
     rightWidth?: number;
     bottomWidth?: number;
 };
-export type ParticleContainerProps = PropsType & {
-    maxSize?: number;
-    // TODO: properties contents
-    properties?: object;
-    batchSize?: number;
-    autoResize?: boolean;
-};
 export type TilingSpriteProps = PropsType &
 WithSource & {
     tilePosition?: PointLike;
     tileScale?: PointLike;
 };
-export type SimpleMeshProps = PropsType &
+export type MeshSimpleProps = PropsType &
 WithSource & {
     image?: string | HTMLImageElement;
     texture?: Texture;
     vertices?: Float32Array;
     uvs?: Float32Array;
-    indices?: Uint16Array;
-    drawMode?: DRAW_MODES;
+    indices?: Uint32Array;
+    topology?: Topology;
 };
-export type SimpleRopeProps = PropsType &
+export type MeshRopeProps = PropsType &
 WithSource & {
-    points: IPoint[];
+    points: PointLike[];
 };
 
 // Merge above props with relevant Pixi Component and DisplayObject/Container props
 export type ReactStageProps = GenericStageProps<
 Application,
-IApplicationOptions
+ApplicationOptions
 >;
 export type ReactStagePropsWithFiber = GenericStagePropsWithFiber<
 Application,
-IApplicationOptions,
+ApplicationOptions,
 PixiReactContainer,
 PixiReactContainer
 >;
@@ -690,21 +648,17 @@ export type ReactGraphicsProps = BaseReactContainerProps<
 Graphics,
 GraphicsProps
 >;
-export type ReactNineSlicePlaneProps = BaseReactContainerProps<
-NineSlicePlane,
-NineSlicePlaneProps
+export type ReactNineSliceSpriteProps = BaseReactContainerProps<
+NineSliceSprite,
+NineSliceSpriteProps
 >;
-export type ReactParticleContainerProps = BaseReactContainerProps<
-ParticleContainer,
-ParticleContainerProps
+export type ReactMeshSimpleProps = BaseReactContainerProps<
+MeshSimple,
+MeshSimpleProps
 >;
-export type ReactSimpleMeshProps = BaseReactContainerProps<
-SimpleMesh,
-SimpleMeshProps
->;
-export type ReactSimpleRopeProps = BaseReactContainerProps<
-SimpleRope,
-SimpleRopeProps
+export type ReactMeshRopeProps = BaseReactContainerProps<
+MeshRope,
+MeshRopeProps
 >;
 export type ReactSpriteProps = BaseReactContainerProps<Sprite, SpriteProps>;
 export type ReactTextProps = BaseReactContainerProps<Text, TextProps>;
@@ -717,7 +671,7 @@ TilingSpriteProps
 export type ReactStageComponent = GenericReactStageComponent<
 BaseStage,
 Application,
-IApplicationOptions
+ApplicationOptions
 >;
 export type ReactAnimatedSpriteComponent = React.FC<ReactAnimatedSpriteProps>;
 export type ReactBitmapTextComponent = React.FC<ReactBitmapTextProps>;
@@ -725,12 +679,9 @@ export type ReactContainerComponent = React.FC<
 React.PropsWithChildren<ReactContainerProps>
 >;
 export type ReactGraphicsComponent = React.FC<ReactGraphicsProps>;
-export type ReactNineSlicePlaneComponent = React.FC<ReactNineSlicePlaneProps>;
-export type ReactParticleContainerComponent = React.FC<
-React.PropsWithChildren<ReactParticleContainerProps>
->;
-export type ReactSimpleMeshComponent = React.FC<ReactSimpleMeshProps>;
-export type ReactSimpleRopeComponent = React.FC<ReactSimpleRopeProps>;
+export type ReactNineSliceSpriteComponent = React.FC<ReactNineSliceSpriteProps>;
+export type ReactMeshSimpleComponent = React.FC<ReactMeshSimpleProps>;
+export type ReactMeshRopeComponent = React.FC<ReactMeshRopeProps>;
 export type ReactSpriteComponent = React.FC<
 React.PropsWithChildren<ReactSpriteProps>
 >;

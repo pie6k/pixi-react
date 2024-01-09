@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import renderer, { act } from 'react-test-renderer';
-import * as reactTest from '@testing-library/react';
 import { Application } from '@pixi/app';
 import { Ticker } from '@pixi/ticker';
-import { Container, Stage, useTick, useApp } from '../src';
+import { Container, Stage, useApp, useTick } from '../src';
+import * as reactTest from '@testing-library/react';
 
 jest.useFakeTimers({
     doNotFake: ['performance']

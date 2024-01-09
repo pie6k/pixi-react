@@ -1,16 +1,16 @@
-import { DRAW_MODES } from '@pixi/constants';
-import { SimpleMesh as PixiSimpleMesh } from '@pixi/mesh-extras';
+import { MeshSimple as PixiMeshSimple } from 'pixi.js';
 import { applyDefaultProps, getTextureFromProps } from '../utils';
-import type { PixiReactContainer, PixiReactSimpleMesh, SimpleMeshProps } from '../types';
 
-const SimpleMesh = (root: PixiReactContainer, props: SimpleMeshProps) =>
+import type { MeshSimpleProps, PixiReactContainer, PixiReactMeshSimple } from '../types';
+
+const MeshSimple = (root: PixiReactContainer, props: MeshSimpleProps) =>
 {
     const texture = getTextureFromProps('Mesh', root, props);
-    const { vertices, uvs, indices, drawMode = DRAW_MODES.TRIANGLES } = props;
+    const { vertices, uvs, indices, topology = 'triangle-list' } = props;
 
-    const simpleMesh: PixiReactSimpleMesh = new PixiSimpleMesh(texture, vertices, uvs, indices, drawMode);
+    const meshSimple: PixiReactMeshSimple = new PixiMeshSimple({ texture, vertices, uvs, indices, topology });
 
-    simpleMesh.applyProps = (instance, oldProps, newProps) =>
+    meshSimple.applyProps = (instance, oldProps, newProps) =>
     {
         const { image, texture, ...props } = newProps;
         let changed = applyDefaultProps(instance, oldProps, props);
@@ -28,7 +28,7 @@ const SimpleMesh = (root: PixiReactContainer, props: SimpleMeshProps) =>
         return changed;
     };
 
-    return simpleMesh;
+    return meshSimple;
 };
 
-export default SimpleMesh;
+export default MeshSimple;

@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
-import type { Filter } from '@pixi/core';
+import type { Filter } from 'pixi.js';
 import { hasKey, invariant, not } from '../utils';
 import type { Container } from '@pixi/display';
 import type { BaseReactContainerProps } from '../types';

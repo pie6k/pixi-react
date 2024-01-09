@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
 import { Assets } from 'pixi.js';
+import React, { useEffect, useState } from 'react';
 
 // Helper Component to ensure assets are loaded for docusaurus live examples
 const ExampleAssetLoader = ({ name, url, loader, children }) =>

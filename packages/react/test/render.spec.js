@@ -1,15 +1,15 @@
-import { Application } from '@pixi/app';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { roots, render, createRoot } from '../src/render';
+import { Application } from '@pixi/app';
 import {
-    PixiFiber,
     AppConsumer,
     AppProvider,
     Container,
+    PixiFiber,
     Text,
     withPixiApp,
 } from '../src';
+import { createRoot, render, roots } from '../src/render';
 
 const app = new Application();
 const element = () => <Text text="Hello Word!" />;

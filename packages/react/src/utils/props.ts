@@ -1,9 +1,10 @@
-import { Texture } from '@pixi/core';
-import { eventHandlers, setValue } from './pixi';
-import { not, hasKey } from './fp';
+import { Texture } from 'pixi.js';
+import { hasKey, not } from './fp';
 import { invariant } from './invariant';
+import { eventHandlers, setValue } from './pixi';
+
 import type {
-    DisplayObjectSettableProperty,
+    ContainerSettableProperty,
     PixiReactContainer,
     PixiReactMinimalExpandoContainer,
     PixiReactTexture,
@@ -30,11 +31,9 @@ export const PROPS_RESERVED = {
  *
  * @type {Object}
  */
-export const PROPS_DISPLAY_OBJECT: Record<DisplayObjectSettableProperty, any>
+export const PROPS_DISPLAY_OBJECT: Record<ContainerSettableProperty, any>
     = {
         alpha: 1,
-        buttonMode: false,
-        cacheAsBitmap: false,
         cursor: null,
         filterArea: null,
         filters: null,
@@ -47,10 +46,14 @@ export const PROPS_DISPLAY_OBJECT: Record<DisplayObjectSettableProperty, any>
         rotation: 0,
         scale: 1,
         skew: 0,
-        transform: null,
         visible: true,
         x: 0,
         y: 0,
+        boundsArea: null,
+        isRenderGroup: false,
+        blendMode: null,
+        tint: 0xffffff,
+        angle: 0,
     };
 
 type TypeValidator = {
@@ -240,7 +243,7 @@ export function applyDefaultProps<
             setValue(
                 instance,
                 prop,
-                PROPS_DISPLAY_OBJECT[prop as DisplayObjectSettableProperty]
+                PROPS_DISPLAY_OBJECT[prop as ContainerSettableProperty]
             );
         }
         else

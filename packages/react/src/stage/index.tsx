@@ -1,15 +1,15 @@
-import type { ErrorInfo } from 'react';
+import PropTypes from 'prop-types';
 import React, { forwardRef } from 'react';
 import { Application } from '@pixi/app';
 import { Ticker } from '@pixi/ticker';
-import PropTypes from 'prop-types';
-
-import { AppProvider } from './provider';
 import { PixiReactFiber } from '../reconciler';
 import { invariant, PROPS_DISPLAY_OBJECT } from '../utils';
+import { AppProvider } from './provider';
+
+import type { ErrorInfo } from 'react';
 import type {
-    PixiReactContainer,
     HTMLCanvasProps,
+    PixiReactContainer,
     ReactStageProps,
     ReactStagePropsWithFiber,
 } from '../types';

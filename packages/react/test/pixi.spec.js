@@ -1,6 +1,6 @@
-import { Point, ObservablePoint } from '@pixi/math';
 import { DisplayObject } from '@pixi/display';
-import { parsePoint, isPointType, eventHandlers, setValue } from '../src/utils/pixi';
+import { ObservablePoint, Point } from '@pixi/math';
+import { eventHandlers, isPointType, parsePoint, setValue } from '../src/utils/pixi';
 
 const noop = () => {};
 

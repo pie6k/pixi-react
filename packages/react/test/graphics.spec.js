@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { act } from 'react-dom/test-utils';
 import renderer from 'react-test-renderer';
 import { Graphics, Stage } from '../src';

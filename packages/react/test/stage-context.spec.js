@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { Stage, AppConsumer, withPixiApp, Container } from '../src';
+import { AppConsumer, Container, Stage, withPixiApp } from '../src';
 import { Context } from '../src/stage/provider';
 
 describe('stage-context', () =>

@@ -1,4 +1,4 @@
-import { resolve, relative } from 'path';
+import { relative, resolve } from 'path';
 
 const isObject = (obj) => Object.prototype.toString.call(obj) === '[object Object]';
 

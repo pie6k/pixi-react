@@ -1,16 +1,14 @@
 import React from 'react';
+import renderer, { act } from 'react-test-renderer';
 import { Application } from '@pixi/app';
 import { Container as PixiContainer } from '@pixi/display';
-import renderer, { act } from 'react-test-renderer';
-import * as reactTest from '@testing-library/react';
-import { PixiFiber } from '../src';
-import { Container, Stage, Text } from '../src';
-import { Context } from '../src/stage/provider';
-import { getCanvasProps } from '../src/stage';
-import { mockToSpy } from './__utils__/mock';
-
 // add events extension
 import '@pixi/events';
+import { Container, PixiFiber, Stage, Text } from '../src';
+import { getCanvasProps } from '../src/stage';
+import { Context } from '../src/stage/provider';
+import { mockToSpy } from './__utils__/mock';
+import * as reactTest from '@testing-library/react';
 
 jest.mock('../src/reconciler');
 jest.useFakeTimers({

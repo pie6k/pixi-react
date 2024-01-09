@@ -1,23 +1,21 @@
+import { createElement, PixiComponent, TYPES, TYPES_INJECTED } from 'packages/react/src/utils/PixiComponent';
+import React from 'react';
+import { Texture } from 'pixi.js';
 import { Container } from '@pixi/display';
 import { Graphics } from '@pixi/graphics';
+import { Point } from '@pixi/math';
+import { NineSlicePlane, SimpleMesh, SimpleRope } from '@pixi/mesh-extras';
+import { ParticleContainer } from '@pixi/particle-container';
+import { Sprite } from '@pixi/sprite';
+import { AnimatedSprite } from '@pixi/sprite-animated';
+import { TilingSprite } from '@pixi/sprite-tiling';
 import { Text } from '@pixi/text';
 import { BitmapText } from '@pixi/text-bitmap';
-import { Sprite } from '@pixi/sprite';
-import { Texture } from '@pixi/core';
-import { AnimatedSprite } from '@pixi/sprite-animated';
-import { ParticleContainer } from '@pixi/particle-container';
-import { TilingSprite } from '@pixi/sprite-tiling';
-import { SimpleRope, SimpleMesh, NineSlicePlane } from '@pixi/mesh-extras';
-import { Point } from '@pixi/math';
-import React from 'react';
-import { render } from '@testing-library/react';
-
-import { createElement, TYPES, TYPES_INJECTED, PixiComponent } from 'packages/react/src/utils/PixiComponent';
 import Stage from '../src/stage';
-
-import { emptyTexture } from './__fixtures__/textures';
 import { desyrel } from './__fixtures__/bitmapfonts';
+import { emptyTexture } from './__fixtures__/textures';
 import parseBitmapFont from './__utils__/parseBitmapFont';
+import { render } from '@testing-library/react';
 
 parseBitmapFont(desyrel);
 
@@ -152,6 +150,14 @@ describe('element.applyProps', () =>
 
         expect(element).toHaveProperty('applyProps');
         expect(spy).lastCalledWith('./image.png');
+    });
+
+    test('AnimatedSprite.applyProps with updated image props', () =>
+    {
+        const element = createElement(TYPES.AnimatedSprite, { images: ['./image.png'] });
+        const changed = element.applyProps(element, { images: ['./image.png'] }, { images: ['./new-image.png'] });
+
+        expect(spy).lastCalledWith('./new-image.png');
     });
 
     test('AnimatedSprite.applyProps with textures prop exists', () =>

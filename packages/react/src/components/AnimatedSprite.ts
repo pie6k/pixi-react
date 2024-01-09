@@ -1,7 +1,8 @@
-import { Texture } from '@pixi/core';
-import type { FrameObject } from '@pixi/sprite-animated';
+import { Texture } from 'pixi.js';
 import { AnimatedSprite as PixiAnimatedSprite } from '@pixi/sprite-animated';
 import { applyDefaultProps, invariant, isArrayWithLength } from '../utils';
+
+import type { FrameObject } from '@pixi/sprite-animated';
 import type { AnimatedSpriteProps, AnimatedSpriteTexturesProp, PixiReactAnimatedSprite, PixiReactContainer } from '../types';
 
 const isTexture = (maybeTexture: any): maybeTexture is Texture => maybeTexture instanceof Texture;
@@ -38,9 +39,21 @@ const AnimatedSprite = (_root: PixiReactContainer, props: AnimatedSpriteProps) =
     animatedSprite[isPlaying ? 'gotoAndPlay' : 'gotoAndStop'](initialFrame || 0);
     animatedSprite.applyProps = (instance, oldProps: AnimatedSpriteProps, newProps: AnimatedSpriteProps) =>
     {
-        const { textures, isPlaying, initialFrame, ...props } = newProps;
+        const { textures, isPlaying, initialFrame, images, ...props } = newProps;
 
         let changed = applyDefaultProps(instance, oldProps, props);
+
+        if (images && oldProps.images !== images)
+        {
+            const newTextures = [];
+
+            for (let i = 0; i < images.length; ++i)
+            {
+                newTextures.push(Texture.from(images[i]));
+            }
+            instance.textures = newTextures;
+            changed = true;
+        }
 
         if (textures && oldProps.textures !== textures)
         {

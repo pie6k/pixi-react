@@ -1,11 +1,10 @@
+import { createElement } from 'packages/react/src/utils/PixiComponent';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
 import { Container as PixiContainer } from '@pixi/display';
 import { Text as PixiText } from '@pixi/text';
-
+import { Container, eventHandlers, render, Text } from '../src';
 import hostconfig from '../src/reconciler/hostconfig';
-import { createElement } from 'packages/react/src/utils/PixiComponent';
-import { Text, Container, render, eventHandlers } from '../src';
 import { roots } from '../src/render';
 import { mockToSpy } from './__utils__/mock';
 

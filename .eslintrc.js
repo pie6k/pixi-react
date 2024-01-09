@@ -35,7 +35,6 @@ module.exports = {
         'spaced-comment': [1, 'always', { markers: ['/'] }],
         '@typescript-eslint/triple-slash-reference': [1, { path: 'always' }],
         '@typescript-eslint/consistent-type-imports': [1, { disallowTypeAnnotations: false }],
-        '@typescript-eslint/no-parameter-properties': 1,
         '@typescript-eslint/type-annotation-spacing': 1,
         '@typescript-eslint/ban-ts-comment': [
             'error',

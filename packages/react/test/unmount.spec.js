@@ -1,8 +1,8 @@
-import { Application } from '@pixi/app';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
+import { Application } from '@pixi/app';
+import { render, Stage, Text, unmountComponentAtNode } from '../src';
 import { roots } from '../src/render';
-import { Text, render, unmountComponentAtNode, Stage } from '../src';
 
 jest.useFakeTimers();
 
