@@ -1,7 +1,6 @@
+import { Application, Ticker } from 'pixi.js';
 import React, { useCallback, useEffect, useRef } from 'react';
 import renderer, { act } from 'react-test-renderer';
-import { Application } from '@pixi/app';
-import { Ticker } from '@pixi/ticker';
 import { Container, Stage, useApp, useTick } from '../src';
 import * as reactTest from '@testing-library/react';
 

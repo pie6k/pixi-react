@@ -1,4 +1,4 @@
-import { BitmapFont } from '@pixi/text-bitmap';
+import { BitmapFontManager } from 'pixi.js';
 import { emptyTexture } from '../__fixtures__/textures';
 
 const parseBitmapFontData = (data, type = 'text/xml', texture = emptyTexture) =>
@@ -11,7 +11,7 @@ const parseBitmapFontData = (data, type = 'text/xml', texture = emptyTexture) =>
         Object.setPrototypeOf(parsed, XMLDocument.prototype);
     }
 
-    BitmapFont.install(parsed, texture);
+    BitmapFontManager.install(parsed, texture);
 };
 
 export default parseBitmapFontData;

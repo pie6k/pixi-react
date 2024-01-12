@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-export default function makeSimpleMeshData() {
+export default function makeMeshSimpleData() {
     const w = 500
     const h = 300
 

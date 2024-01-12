@@ -1,5 +1,4 @@
-import { Texture } from 'pixi.js';
-import { Container } from '@pixi/display';
+import { Container, Texture } from 'pixi.js';
 import { applyDefaultProps, getTextureFromProps, PROPS_DISPLAY_OBJECT, PROPS_RESERVED } from '../src/utils/props';
 import { emptyTexture } from './__fixtures__/textures';
 

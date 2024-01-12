@@ -1,16 +1,19 @@
 import { createElement, PixiComponent, TYPES, TYPES_INJECTED } from 'packages/react/src/utils/PixiComponent';
+import {
+    AnimatedSprite,
+    BitmapText,
+    Container,
+    Graphics,
+    MeshRope,
+    MeshSimple,
+    NineSliceSprite,
+    Point,
+    Sprite,
+    Text,
+    Texture,
+    TilingSprite
+} from 'pixi.js';
 import React from 'react';
-import { Texture } from 'pixi.js';
-import { Container } from '@pixi/display';
-import { Graphics } from '@pixi/graphics';
-import { Point } from '@pixi/math';
-import { NineSlicePlane, SimpleMesh, SimpleRope } from '@pixi/mesh-extras';
-import { ParticleContainer } from '@pixi/particle-container';
-import { Sprite } from '@pixi/sprite';
-import { AnimatedSprite } from '@pixi/sprite-animated';
-import { TilingSprite } from '@pixi/sprite-tiling';
-import { Text } from '@pixi/text';
-import { BitmapText } from '@pixi/text-bitmap';
 import Stage from '../src/stage';
 import { desyrel } from './__fixtures__/bitmapfonts';
 import { emptyTexture } from './__fixtures__/textures';
@@ -61,13 +64,6 @@ describe('createElement', () =>
         expect(element).toBeInstanceOf(AnimatedSprite);
     });
 
-    test('create ParticleContainer', () =>
-    {
-        const element = createElement(TYPES.ParticleContainer);
-
-        expect(element).toBeInstanceOf(ParticleContainer);
-    });
-
     test('create BitmapText', () =>
     {
         const element = createElement(TYPES.BitmapText, {
@@ -92,28 +88,28 @@ describe('createElement', () =>
         expect(element).toBeInstanceOf(Graphics);
     });
 
-    test('create NineSlicePlane', () =>
+    test('create NineSliceSprite', () =>
     {
-        const element = createElement(TYPES.NineSlicePlane, { texture: emptyTexture });
+        const element = createElement(TYPES.NineSliceSprite, { texture: emptyTexture });
 
-        expect(element).toBeInstanceOf(NineSlicePlane);
+        expect(element).toBeInstanceOf(NineSliceSprite);
     });
 
-    test('create SimpleMesh', () =>
+    test('create MeshSimple', () =>
     {
-        const element = createElement(TYPES.SimpleMesh, { texture: emptyTexture });
+        const element = createElement(TYPES.MeshSimple, { texture: emptyTexture });
 
-        expect(element).toBeInstanceOf(SimpleMesh);
+        expect(element).toBeInstanceOf(MeshSimple);
     });
 
-    test('create SimpleRope', () =>
+    test('create MeshRope', () =>
     {
-        const element = createElement(TYPES.SimpleRope, {
+        const element = createElement(TYPES.MeshRope, {
             texture: emptyTexture,
             points: [new Point(0, 0), new Point(20, 20)],
         });
 
-        expect(element).toBeInstanceOf(SimpleRope);
+        expect(element).toBeInstanceOf(MeshRope);
     });
 
     test('get undefined', () =>
@@ -233,9 +229,9 @@ describe('element.applyProps', () =>
         expect(changed).toBeTruthy();
     });
 
-    test('SimpleRope.applyProps exists', () =>
+    test('MeshRope.applyProps exists', () =>
     {
-        const element = createElement(TYPES.SimpleRope, {
+        const element = createElement(TYPES.MeshRope, {
             image: './image.png',
             points: [new Point(0, 0), new Point(20, 20)],
         });
@@ -244,9 +240,9 @@ describe('element.applyProps', () =>
         expect(spy).toHaveBeenCalledWith('./image.png');
     });
 
-    test('SimpleRope.applyProps image', () =>
+    test('MeshRope.applyProps image', () =>
     {
-        const element = createElement(TYPES.SimpleRope, {
+        const element = createElement(TYPES.MeshRope, {
             image: './image.png',
             points: [new Point(0, 0), new Point(20, 20)],
         });
@@ -266,17 +262,17 @@ describe('element.applyProps', () =>
         expect(changed).toBeTruthy();
     });
 
-    test('NineSlicePlane.applyProps exists', () =>
+    test('NineSliceSprite.applyProps exists', () =>
     {
-        const element = createElement(TYPES.NineSlicePlane, { image: './image.png' });
+        const element = createElement(TYPES.NineSliceSprite, { image: './image.png' });
 
         expect(element).toHaveProperty('applyProps');
         expect(spy).toHaveBeenCalledWith('./image.png');
     });
 
-    test('NineSlicePlane.applyProps image', () =>
+    test('NineSliceSprite.applyProps image', () =>
     {
-        const element = createElement(TYPES.NineSlicePlane, { image: './image.png' });
+        const element = createElement(TYPES.NineSliceSprite, { image: './image.png' });
 
         expect(spy).lastCalledWith('./image.png');
 
@@ -286,25 +282,25 @@ describe('element.applyProps', () =>
         expect(changed).toBeFalsy();
     });
 
-    test('NineSlicePlane.applyProps texture', () =>
+    test('NineSliceSprite.applyProps texture', () =>
     {
-        const element = createElement(TYPES.NineSlicePlane, { texture: emptyTexture });
+        const element = createElement(TYPES.NineSliceSprite, { texture: emptyTexture });
         const changed = element.applyProps(element, { texture: emptyTexture }, { image: './new-image.png' });
 
         expect(changed).toBeTruthy();
     });
 
-    test('SimpleMesh.applyProps exists', () =>
+    test('MeshSimple.applyProps exists', () =>
     {
-        const element = createElement(TYPES.SimpleMesh, { image: './image.png' });
+        const element = createElement(TYPES.MeshSimple, { image: './image.png' });
 
         expect(element).toHaveProperty('applyProps');
         expect(spy).toHaveBeenCalledWith('./image.png');
     });
 
-    test('SimpleMesh.applyProps image', () =>
+    test('MeshSimple.applyProps image', () =>
     {
-        const element = createElement(TYPES.SimpleMesh, { image: './image.png' });
+        const element = createElement(TYPES.MeshSimple, { image: './image.png' });
 
         expect(spy).lastCalledWith('./image.png');
 
@@ -314,9 +310,9 @@ describe('element.applyProps', () =>
         expect(changed).toBeFalsy();
     });
 
-    test('SimpleMesh.applyProps texture', () =>
+    test('MeshSimple.applyProps texture', () =>
     {
-        const element = createElement(TYPES.SimpleMesh, { texture: emptyTexture });
+        const element = createElement(TYPES.MeshSimple, { texture: emptyTexture });
 
         const changed = element.applyProps(element, { texture: emptyTexture }, { image: './new-image.png' });
 

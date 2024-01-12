@@ -1,6 +1,6 @@
+import { Application } from 'pixi.js';
 import React from 'react';
 import { act } from 'react-dom/test-utils';
-import { Application } from '@pixi/app';
 import {
     AppConsumer,
     AppProvider,

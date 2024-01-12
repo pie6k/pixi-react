@@ -11,8 +11,7 @@
   "sideEffects": false,
   "main": "index.js",
   "module": "module.js",
-  "jsnext:main": "module.js",
-  "types": "./dist/types/index.d.ts",
+  "typings": "./dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": {
@@ -57,7 +56,8 @@
     "canvas": "^2.11.0",
     "jest-webgl-canvas-mock": "^0.2.3",
     "react-test-renderer": "18.2.0",
-    "rollup-plugin-copy": "^3.4.0"
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-dts": "^6.0.0"
   },
   "peerDependencies": {
     "pixi.js": ">=8.0.0-0",

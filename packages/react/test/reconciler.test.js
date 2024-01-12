@@ -1,8 +1,7 @@
 import { createElement } from 'packages/react/src/utils/PixiComponent';
+import { Container as PixiContainer, Text as PixiText } from 'pixi.js';
 import React, { createRef, Suspense } from 'react';
 import { act } from 'react-dom/test-utils';
-import { Container as PixiContainer } from '@pixi/display';
-import { Text as PixiText } from '@pixi/text';
 import { Container, Text } from '../src';
 import hostconfig from '../src/reconciler/hostconfig';
 import { createRoot, roots } from '../src/render';

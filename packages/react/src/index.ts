@@ -1,4 +1,3 @@
-/// <reference path="./global.d.ts" />
 import {
     AnimatedSprite as AnimatedSpriteComponent,
     BitmapText as BitmapTextComponent,

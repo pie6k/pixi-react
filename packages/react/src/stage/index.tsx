@@ -1,4 +1,4 @@
-import { Application, Ticker } from 'pixi.js';
+import { Application, RendererType, Ticker } from 'pixi.js';
 import PropTypes from 'prop-types';
 import React, { forwardRef } from 'react';
 import { PixiReactFiber } from '../reconciler';
@@ -14,9 +14,36 @@ import type {
     ReactStagePropsWithFiber,
 } from '../types';
 
-new Application().init({
+class TrackablePromise
+{
+    isPending: boolean;
+    isRejected: boolean;
+    isFulfilled: boolean;
+    promise: Promise<any>|null = null;
+    constructor(promise: Promise<any>)
+    {
+        this.isPending = true;
+        this.isRejected = false;
+        this.isFulfilled = false;
+        this.promise = promise;
 
-});
+        promise
+            .then((value) =>
+            {
+                this.isFulfilled = true;
+                this.isPending = false;
+
+                return value;
+            })
+            .catch((error) =>
+            {
+                this.isRejected = true;
+                this.isPending = false;
+                throw error;
+            });
+    }
+}
+
 /**
  * -------------------------------------------
  * Stage React Component (use this in react-dom)
@@ -187,6 +214,8 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
     static propTypes = wrappedStagePropTypes;
     static defaultProps = defaultProps;
 
+    public appReady: TrackablePromise | null = null;
+
     async componentDidMount()
     {
         const {
@@ -199,71 +228,80 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
             renderOnComponentChange,
         } = this.props;
 
+        if (this.app)
+        {
+            this.appReady!.promise = null;
+            this.appReady = null;
+        }
+
         this.app = new Application();
         // eslint-disable-next-line no-void
-        await this.app.init({
+        this.appReady = new TrackablePromise(this.app.init({
             width,
             height,
             view: this._canvas!,
             ...options,
             autoDensity: options?.autoDensity !== false,
-        });
+        }));
 
-        if (process.env.NODE_ENV === 'development')
+        this.appReady.promise!.then(() =>
         {
-            // workaround for React 18 Strict Mode unmount causing canvas
-            // context to be lost
-            // @ts-ignore - workaround for development only
-            this.app.renderer.context.extensions.loseContext = null;
-        }
+            if (process.env.NODE_ENV === 'development' && this.app!.renderer.type === RendererType.WEBGL)
+            {
+                // workaround for React 18 Strict Mode unmount causing canvas
+                // context to be lost
+                // @ts-ignore - workaround for development only
+                this.app.renderer.context.extensions.loseContext = null;
+            }
 
-        this.app.ticker.autoStart = false;
-        this.app.ticker[raf ? 'start' : 'stop']();
+            this.app!.ticker.autoStart = false;
+            this.app!.ticker[raf ? 'start' : 'stop']();
 
-        (this.app.stage as PixiReactContainer).__reactpixi = {
-            root: this.app.stage,
-            parent: null,
-            previousAttach: null,
-            attachedObjects: [],
-        };
-        // @ts-ignore - react reconciler lists several parameters as required that are optional
-        this.mountNode = pixiReactFiberInstance.createContainer(this.app.stage);
-        pixiReactFiberInstance.updateContainer(
-            this.getChildren(),
-            this.mountNode,
-            this
-        );
+            (this.app!.stage as PixiReactContainer).__reactpixi = {
+                root: this.app!.stage,
+                parent: null,
+                previousAttach: null,
+                attachedObjects: [],
+            };
+            // @ts-ignore - react reconciler lists several parameters as required that are optional
+            this.mountNode = pixiReactFiberInstance.createContainer(this.app.stage);
+            pixiReactFiberInstance.updateContainer(
+                this.getChildren(),
+                this.mountNode,
+                this
+            );
 
-        onMount(this.app);
+            onMount(this.app!);
 
-        // update size on media query resolution change?
-        // only if autoDensity = true
-        if (
-            options?.autoDensity
+            // update size on media query resolution change?
+            // only if autoDensity = true
+            if (
+                options?.autoDensity
             && window.matchMedia
             && options?.resolution === undefined
-        )
-        {
-            this._mediaQuery = window.matchMedia(
-                `(-webkit-min-device-pixel-ratio: 1.3), (min-resolution: 120dpi)`
-            );
-            this._mediaQuery.addListener(this.updateSize);
-        }
+            )
+            {
+                this._mediaQuery = window.matchMedia(
+                    `(-webkit-min-device-pixel-ratio: 1.3), (min-resolution: 120dpi)`
+                );
+                this._mediaQuery.addListener(this.updateSize);
+            }
 
-        // listen for reconciler changes
-        if (renderOnComponentChange && !raf)
-        {
-            this._ticker = new Ticker();
-            this._ticker.autoStart = true;
-            this._ticker.add(this.renderStage);
-            this.app.stage.on(
-                '__REACT_PIXI_REQUEST_RENDER__',
-                this.needsRenderUpdate
-            );
-        }
+            // listen for reconciler changes
+            if (renderOnComponentChange && !raf)
+            {
+                this._ticker = new Ticker();
+                this._ticker.autoStart = true;
+                this._ticker.add(this.renderStage);
+                this.app!.stage.on(
+                    '__REACT_PIXI_REQUEST_RENDER__',
+                    this.needsRenderUpdate
+                );
+            }
 
-        this.updateSize();
-        this.renderStage();
+            this.updateSize();
+            this.renderStage();
+        });
     }
 
     componentDidUpdate(prevProps: ReactStagePropsWithFiber)
@@ -379,6 +417,15 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
 
     componentWillUnmount()
     {
+        // check if appReady is fulfilled
+        if (this.appReady?.isPending)
+        {
+            this.appReady = null;
+            this.app = null;
+
+            return;
+        }
+
         const { pixiReactFiberInstance, onUnmount } = this.props;
 
         onUnmount(this.app!);
