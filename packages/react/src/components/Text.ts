@@ -5,7 +5,7 @@ import type { PixiReactContainer, PixiReactSprite, PixiReactText, TextProps } fr
 const Text = (_root: PixiReactContainer, props: TextProps): PixiReactText | PixiReactSprite =>
 {
     const { text = '', style = {} } = props;
-    const pixiText = new PixiText(text, style);
+    const pixiText = new PixiText({ text, style });
 
     return pixiText;
 };

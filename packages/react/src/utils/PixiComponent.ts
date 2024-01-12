@@ -1,7 +1,8 @@
 import { invariant } from './invariant';
+
 import type {
-    ComponentType,
     ComponentsType,
+    ComponentType,
     PixiReactMinimalExpandoContainer,
     PropsType,
 } from '../types';

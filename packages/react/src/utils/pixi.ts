@@ -1,10 +1,10 @@
 import isNil from 'lodash.isnil';
 import { invariant } from './invariant';
 
+import type { PointLike } from 'pixi.js';
 import type {
     PixiReactMinimalExpandoContainer,
     PointCoords,
-    PointLike,
 } from '../types';
 
 /**

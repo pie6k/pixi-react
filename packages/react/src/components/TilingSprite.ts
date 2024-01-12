@@ -1,5 +1,6 @@
-import { TilingSprite as PixiTilingSprite } from '@pixi/sprite-tiling';
+import { TilingSprite as PixiTilingSprite } from 'pixi.js';
 import { applyDefaultProps, getTextureFromProps, parsePoint, pointsAreEqual } from '../utils';
+
 import type { PixiReactContainer, PixiReactTilingSprite, TilingSpriteProps } from '../types';
 
 const TilingSprite = (root: PixiReactContainer, props: TilingSpriteProps) =>
@@ -7,7 +8,7 @@ const TilingSprite = (root: PixiReactContainer, props: TilingSpriteProps) =>
     const { width = 100, height = 100 } = props;
     const texture = getTextureFromProps('TilingSprite', root, props);
 
-    const ts: PixiReactTilingSprite = new PixiTilingSprite(texture, width, height);
+    const ts: PixiReactTilingSprite = new PixiTilingSprite({ texture, width, height });
 
     ts.applyProps = (instance, oldProps, newProps) =>
     {

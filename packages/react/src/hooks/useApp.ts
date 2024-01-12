@@ -1,7 +1,7 @@
+import { Application } from 'pixi.js';
 import { useContext } from 'react';
-import { Application } from '@pixi/app';
-import { invariant } from '../utils';
 import { Context } from '../stage/provider';
+import { invariant } from '../utils';
 
 export function useApp(): Application
 {

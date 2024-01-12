@@ -10,23 +10,24 @@
 
 import {
     ContinuousEventPriority,
-    DiscreteEventPriority,
     DefaultEventPriority,
+    DiscreteEventPriority,
 } from 'react-reconciler/constants';
-import { diffProperties as defaultDiffProperties } from './diffProperties';
 import { invariant } from '../utils';
-import type { diffPropertiesType, GenericPixiReactHostConfig } from '../types';
+import { diffProperties as defaultDiffProperties } from './diffProperties';
+
 import type {
     applyPropsType,
-    ComponentType,
-    PropsType,
-    PixiReactMinimalExpandoContainer,
-    ICustomComponent,
-    createCustomComponentType,
-    UpdatePayload,
-    InstanceProps,
     AttachType,
+    ComponentType,
+    createCustomComponentType,
+    diffPropertiesType, GenericPixiReactHostConfig,
+    ICustomComponent,
+    InstanceProps,
     LocalState,
+    PixiReactMinimalExpandoContainer,
+    PropsType,
+    UpdatePayload,
 } from '../types';
 
 const NO_CONTEXT = {};
@@ -440,6 +441,7 @@ function insertBefore<
         const childExists = parent.children.indexOf(child) !== -1;
         const index = parent.getChildIndex(beforeChild);
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-expressions
         childExists
             ? parent.setChildIndex(child, index)
             : parent.addChildAt(child, index);

@@ -2,10 +2,9 @@ import AnimatedSprite from './AnimatedSprite';
 import BitmapText from './BitmapText';
 import Container from './Container';
 import Graphics from './Graphics';
-import NineSlicePlane from './NineSlicePlane';
-import ParticleContainer from './ParticleContainer';
-import SimpleMesh from './SimpleMesh';
-import SimpleRope from './SimpleRope';
+import MeshRope from './MeshRope';
+import MeshSimple from './MeshSimple';
+import NineSliceSprite from './NineSliceSprite';
 import Sprite from './Sprite';
 import Text from './Text';
 import TilingSprite from './TilingSprite';
@@ -15,10 +14,9 @@ export {
     BitmapText,
     Container,
     Graphics,
-    NineSlicePlane,
-    ParticleContainer,
-    SimpleMesh,
-    SimpleRope,
+    MeshRope,
+    MeshSimple,
+    NineSliceSprite,
     Sprite,
     Text,
     TilingSprite,

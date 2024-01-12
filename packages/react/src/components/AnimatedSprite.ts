@@ -1,8 +1,7 @@
-import { Texture } from 'pixi.js';
-import { AnimatedSprite as PixiAnimatedSprite } from '@pixi/sprite-animated';
+import { AnimatedSprite as PixiAnimatedSprite, Texture } from 'pixi.js';
 import { applyDefaultProps, invariant, isArrayWithLength } from '../utils';
 
-import type { FrameObject } from '@pixi/sprite-animated';
+import type { FrameObject } from 'pixi.js';
 import type { AnimatedSpriteProps, AnimatedSpriteTexturesProp, PixiReactAnimatedSprite, PixiReactContainer } from '../types';
 
 const isTexture = (maybeTexture: any): maybeTexture is Texture => maybeTexture instanceof Texture;

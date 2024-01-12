@@ -1,11 +1,11 @@
+import { Application, Ticker } from 'pixi.js';
 import PropTypes from 'prop-types';
 import React, { forwardRef } from 'react';
-import { Application } from '@pixi/app';
-import { Ticker } from '@pixi/ticker';
 import { PixiReactFiber } from '../reconciler';
 import { invariant, PROPS_DISPLAY_OBJECT } from '../utils';
 import { AppProvider } from './provider';
 
+// eslint-disable-next-line no-duplicate-imports
 import type { ErrorInfo } from 'react';
 import type {
     HTMLCanvasProps,
@@ -14,6 +14,9 @@ import type {
     ReactStagePropsWithFiber,
 } from '../types';
 
+new Application().init({
+
+});
 /**
  * -------------------------------------------
  * Stage React Component (use this in react-dom)
@@ -53,21 +56,39 @@ export const propTypes = {
 
     // PIXI options, see https://pixijs.download/dev/docs/PIXI.Application.html
     options: PropTypes.shape({
+        antialias: PropTypes.bool,
+        autoDensity: PropTypes.bool,
         autoStart: PropTypes.bool,
+        background: PropTypes.number,
+        backgroundAlpha: PropTypes.number,
+        backgroundColor: PropTypes.number,
+        bezierSmoothness: PropTypes.number,
+        clearBeforeRender: PropTypes.bool,
+        context: PropTypes.any,
+        eventFeatures: PropTypes.object,
+        eventMode: PropTypes.string,
+        failIfMajorPerformanceCaveat: PropTypes.bool,
+        forceFallbackAlpha: PropTypes.bool,
         width: PropTypes.number,
         height: PropTypes.number,
-        useContextAlpha: PropTypes.bool,
-        backgroundAlpha: PropTypes.number,
-        autoDensity: PropTypes.bool,
-        antialias: PropTypes.bool,
+        hello: PropTypes.bool,
+        manageImports: PropTypes.bool,
+        multiView: PropTypes.bool,
+        powerPreference: PropTypes.string,
+        preferences: PropTypes.object,
+        preferWebGLVersion: PropTypes.number,
+        premultipliedAlpha: PropTypes.bool,
         preserveDrawingBuffer: PropTypes.bool,
         resolution: PropTypes.number,
-        forceCanvas: PropTypes.bool,
-        backgroundColor: PropTypes.number,
-        clearBeforeRender: PropTypes.bool,
-        powerPreference: PropTypes.string,
+        roundPixels: PropTypes.bool,
         sharedTicker: PropTypes.bool,
         sharedLoader: PropTypes.bool,
+        textureGCActive: PropTypes.bool,
+        textureGCMaxIdle: PropTypes.number,
+        textureGCCheckCountMax: PropTypes.number,
+        useBackBuffer: PropTypes.bool,
+        webgl: PropTypes.any,
+        webgpu: PropTypes.any,
 
         // resizeTo needs to be a window or HTMLElement
         resizeTo: (props, propName) =>
@@ -90,8 +111,8 @@ export const propTypes = {
             return null;
         },
 
-        // view is optional, use if provided
-        view: (props, propName, componentName) =>
+        // canvas is optional, use if provided
+        canvas: (props, propName, componentName) =>
         {
             const el = props[propName];
 
@@ -100,7 +121,8 @@ export const propTypes = {
                 el
                     && invariant(
                         el instanceof HTMLCanvasElement,
-                        `Invalid prop \`view\` of type ${typeof el}, supplied to ${componentName}, expected \`<canvas> Element\``
+                        // eslint-disable-next-line max-len
+                        `Invalid prop \`canvas\` of type ${typeof el}, supplied to ${componentName}, expected \`<canvas> Element\``
                     );
             }
             catch (e)
@@ -165,7 +187,7 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
     static propTypes = wrappedStagePropTypes;
     static defaultProps = defaultProps;
 
-    componentDidMount()
+    async componentDidMount()
     {
         const {
             pixiReactFiberInstance,
@@ -177,7 +199,9 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
             renderOnComponentChange,
         } = this.props;
 
-        this.app = new Application({
+        this.app = new Application();
+        // eslint-disable-next-line no-void
+        await this.app.init({
             width,
             height,
             view: this._canvas!,
@@ -259,7 +283,6 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
             && prevProps?.options?.resolution !== options?.resolution
         )
         {
-            // @ts-ignore - resolution now settable see pixijs PR - https://github.com/pixijs/pixijs/pull/9209
             this.app!.renderer.resolution = options.resolution;
             this.resetInteractionManager();
         }
@@ -306,7 +329,6 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
 
         if (!options?.resolution)
         {
-            // @ts-ignore - resolution now settable see pixijs PR - https://github.com/pixijs/pixijs/pull/9209
             this.app!.renderer.resolution = window.devicePixelRatio;
             this.resetInteractionManager();
         }
@@ -333,15 +355,12 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
     // provide support for Pixi v6 still
     resetInteractionManager()
     {
-        // `interaction` property is absent in Pixi v7 and in v6 if user has installed Federated Events API plugin.
-        // https://api.pixijs.io/@pixi/events.html
-        // in v7 however, there's a stub object which displays a deprecation warning, so also check the resolution property:
-        const { interaction: maybeInteraction } = this.app!.renderer.plugins;
+        // const { interaction: maybeInteraction } = this.app!.renderer.plugins;
 
-        if (maybeInteraction?.resolution)
-        {
-            maybeInteraction.resolution = this.app!.renderer.resolution;
-        }
+        // if (maybeInteraction?.resolution)
+        // {
+        //     maybeInteraction.resolution = this.app!.renderer.resolution;
+        // }
     }
 
     getChildren()
@@ -390,11 +409,11 @@ export class BaseStage extends React.Component<BaseStagePropsWithDefaults>
     {
         const { options } = this.props;
 
-        if (options && options.view)
+        if (options && options.canvas)
         {
             invariant(
-                options.view instanceof HTMLCanvasElement,
-                'options.view needs to be a `HTMLCanvasElement`'
+                options.canvas instanceof HTMLCanvasElement,
+                'options.canvas needs to be a `HTMLCanvasElement`'
             );
 
             return null;

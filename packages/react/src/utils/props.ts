@@ -1,8 +1,9 @@
-import { Texture } from 'pixi.js';
+import { autoDetectSource, Texture } from 'pixi.js';
 import { hasKey, not } from './fp';
 import { invariant } from './invariant';
 import { eventHandlers, setValue } from './pixi';
 
+import type { Container } from 'pixi.js';
 import type {
     ContainerSettableProperty,
     PixiReactContainer,
@@ -17,12 +18,27 @@ export const CHILDREN = 'children';
  *
  * @type {Object}
  */
-export const PROPS_RESERVED = {
+export const PROPS_RESERVED: Partial<Record<keyof Container, true>> = {
     [CHILDREN]: true,
     parent: true,
-    worldAlpha: true,
     worldTransform: true,
-    worldVisible: true,
+    localColor: true,
+    localAlpha: true,
+    groupAlpha: true,
+    groupColor: true,
+    groupColorAlpha: true,
+    localBlendMode: true,
+    groupBlendMode: true,
+    localVisibleRenderable: true,
+    groupVisibleRenderable: true,
+    renderPipeId: true,
+    includeInBuild: true,
+    measurable: true,
+    isSimple: true,
+    updateTick: true,
+    localTransform: true,
+    relativeGroupTransform: true,
+    groupTransform: true,
 };
 
 /**
@@ -31,7 +47,7 @@ export const PROPS_RESERVED = {
  *
  * @type {Object}
  */
-export const PROPS_DISPLAY_OBJECT: Record<ContainerSettableProperty, any>
+export const PROPS_CONTAINER: Partial<Record<keyof Container, any>>
     = {
         alpha: 1,
         cursor: null,
@@ -129,16 +145,16 @@ export const getTextureFromProps = <Container extends PixiReactContainer>(
             texture?.__reactpixi?.root?.emit(`__REACT_PIXI_REQUEST_RENDER__`);
         });
 
-    const texture: PixiReactTexture = Texture.from(result);
+    const texture: PixiReactTexture = Texture.from(
+        typeof result === 'string'
+            ? result
+            : autoDetectSource({ resource: result })
+    );
 
     texture.__reactpixi = { root };
     texture.once('update', emitChange);
-    texture.once('loaded', emitChange);
 
-    if (texture.valid)
-    {
-        emitChange(texture);
-    }
+    emitChange(texture);
 
     return texture;
 };
@@ -230,7 +246,7 @@ export function applyDefaultProps<
             // set value if defined
             setValue(instance, prop, value);
         }
-        else if (prop in PROPS_DISPLAY_OBJECT)
+        else if (prop in PROPS_CONTAINER)
         {
             // is a default value, use that
             console.warn(
@@ -243,7 +259,7 @@ export function applyDefaultProps<
             setValue(
                 instance,
                 prop,
-                PROPS_DISPLAY_OBJECT[prop as ContainerSettableProperty]
+                PROPS_CONTAINER[prop as ContainerSettableProperty]
             );
         }
         else

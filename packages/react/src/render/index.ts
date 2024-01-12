@@ -1,6 +1,7 @@
-import { Container } from '@pixi/display';
+import { Container } from 'pixi.js';
 import { PixiReactFiber } from '../reconciler';
 import { invariant } from '../utils';
+
 import type { RootEntry, Roots } from '../types';
 
 export const roots: Roots = new Map<Container, RootEntry>();

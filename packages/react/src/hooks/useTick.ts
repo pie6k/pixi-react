@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useApp } from './useApp';
 import { invariant } from '../utils';
-import type { Ticker } from '@pixi/ticker';
+import { useApp } from './useApp';
 
-type UseTickCallback = (delta: number, ticker: Ticker) => void;
+import type { Ticker } from 'pixi.js';
+
+type UseTickCallback = (ticker: Ticker) => void;
 
 function useTick(callback: UseTickCallback, enabled = true)
 {
@@ -23,7 +24,7 @@ function useTick(callback: UseTickCallback, enabled = true)
     {
         if (enabled)
         {
-            const tick = (delta: number) => savedRef.current?.apply(app.ticker, [delta, app.ticker]);
+            const tick = () => savedRef.current?.apply(app.ticker, [app.ticker]);
 
             app.ticker.add(tick);
 

@@ -7,7 +7,6 @@ import {
     MeshRope as MeshRopeComponent,
     MeshSimple as MeshSimpleComponent,
     NineSliceSprite as NineSliceSpriteComponent,
-    ParticleContainer as ParticleContainerComponent,
     Sprite as SpriteComponent, Text as TextComponent, TilingSprite as TilingSpriteComponent
 } from './components';
 import { PixiReactFiber } from './reconciler';
@@ -37,7 +36,6 @@ export const TYPES = {
     Container: 'Container',
     Graphics: 'Graphics',
     NineSliceSprite: 'NineSliceSprite',
-    ParticleContainer: 'ParticleContainer',
     Sprite: 'Sprite',
     AnimatedSprite: 'AnimatedSprite',
     Text: 'Text',
@@ -52,8 +50,6 @@ export const Container = TYPES.Container as unknown as ReactContainerComponent;
 export const Graphics = TYPES.Graphics as unknown as ReactGraphicsComponent;
 export const NineSliceSprite
     = TYPES.NineSliceSprite as unknown as ReactNineSliceSpriteComponent;
-export const ParticleContainer
-    = TYPES.ParticleContainer as unknown as ReactParticleContainerComponent;
 export const Sprite = TYPES.Sprite as unknown as ReactSpriteComponent;
 export const AnimatedSprite
     = TYPES.AnimatedSprite as unknown as ReactAnimatedSpriteComponent;
@@ -71,7 +67,6 @@ const components: ComponentsType = {
     Container: ContainerComponent,
     Graphics: GraphicsComponent,
     NineSliceSprite: NineSliceSpriteComponent,
-    ParticleContainer: ParticleContainerComponent,
     MeshSimple: MeshSimpleComponent,
     MeshRope: MeshRopeComponent,
     Sprite: SpriteComponent,

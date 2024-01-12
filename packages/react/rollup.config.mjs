@@ -1,35 +1,17 @@
-import alias from '@rollup/plugin-alias';
 import copy from 'rollup-plugin-copy';
-
 import {
     getBuildFormat,
     getRollupTSConfig,
     isProductionBuild,
 } from '../../shared/getRollupConfig.mjs';
+import alias from '@rollup/plugin-alias';
 
 const format = getBuildFormat();
 const buildType = isProductionBuild() ? '' : '-dev';
 
 const external = [
+    'pixi.js',
     '@pixi/react-invariant',
-    '@pixi/app',
-    '@pixi/assets',
-    '@pixi/constants',
-    '@pixi/core',
-    '@pixi/display',
-    '@pixi/events',
-    '@pixi/extensions',
-    '@pixi/graphics',
-    '@pixi/math',
-    '@pixi/mesh',
-    '@pixi/mesh-extras',
-    '@pixi/particle-container',
-    '@pixi/sprite',
-    '@pixi/sprite-animated',
-    '@pixi/sprite-tiling',
-    '@pixi/text',
-    '@pixi/text-bitmap',
-    '@pixi/ticker',
     'lodash.isnil',
     'lodash.times',
     'prop-types',

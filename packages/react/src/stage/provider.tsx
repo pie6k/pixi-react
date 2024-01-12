@@ -1,5 +1,6 @@
 import React from 'react';
-import type { Application } from '@pixi/app';
+
+import type { Application } from 'pixi.js';
 
 const Context = React.createContext<Application | null>(null);
 
@@ -10,7 +11,8 @@ type WithPixiAppProps = {
     app: Application;
 };
 
-const withPixiApp = <P extends WithPixiAppProps>(BaseComponent: React.ComponentType<P>) => {
+const withPixiApp = <P extends WithPixiAppProps>(BaseComponent: React.ComponentType<P>) =>
+{
     const Wrapper = React.forwardRef((props: Omit<P, keyof WithPixiAppProps>, ref) => (
         <AppConsumer>{(app) => <BaseComponent {...(props as P)} ref={ref} app={app} />}</AppConsumer>
     ));
@@ -20,4 +22,4 @@ const withPixiApp = <P extends WithPixiAppProps>(BaseComponent: React.ComponentT
     return Wrapper;
 };
 
-export { withPixiApp, AppProvider, AppConsumer, Context };
+export { AppConsumer, AppProvider, Context, withPixiApp };

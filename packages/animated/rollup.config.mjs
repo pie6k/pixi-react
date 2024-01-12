@@ -2,21 +2,9 @@ import { getRollupTSConfig, isProductionBuild } from '../../shared/getRollupConf
 
 const buildType = isProductionBuild() ? '' : '-dev';
 
-const external =  [
+const external = [
+    'pixi.js',
     '@pixi/react',
-    '@pixi/app',
-    '@pixi/core',
-    '@pixi/display',
-    '@pixi/graphics',
-    '@pixi/math',
-    '@pixi/mesh-extras',
-    '@pixi/text',
-    '@pixi/text-bitmap',
-    '@pixi/ticker',
-    '@pixi/sprite',
-    '@pixi/sprite-tiling',
-    '@pixi/sprite-animated',
-    '@pixi/particle-container',
     '@react-spring/animated',
     'react',
     'react-dom',

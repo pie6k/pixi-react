@@ -1,8 +1,8 @@
 import Reconciler from 'react-reconciler';
+import data from '../data.json';
+import { applyDefaultProps, COMPONENTS } from '../utils';
 import { diffProperties } from './diffProperties';
 import { makeHostConfig } from './hostconfig';
-import { applyDefaultProps, COMPONENTS } from '../utils';
-import data from '../data.json';
 
 /**
  * Instantiate host config and PixiReactFiber, this is side-effecty :(

@@ -12,7 +12,7 @@
   "main": "index.js",
   "module": "module.js",
   "jsnext:main": "module.js",
-  "typings": "./dist/types/index.d.ts",
+  "types": "./dist/types/index.d.ts",
   "exports": {
     ".": {
       "import": {

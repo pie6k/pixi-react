@@ -1,8 +1,8 @@
-import React, { useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
-import type { Filter } from 'pixi.js';
+import React, { useMemo, useRef } from 'react';
 import { hasKey, invariant, not } from '../utils';
-import type { Container } from '@pixi/display';
+
+import type { Container, Filter } from 'pixi.js';
 import type { BaseReactContainerProps } from '../types';
 
 export type FilterClassMap = Record<string, typeof Filter>;
@@ -41,7 +41,7 @@ export const withFilters = <T extends Container, P extends BaseReactContainerPro
                     {
                         const constructorArgs = props?.[prop]?.construct || [];
 
-                        return new filters[prop](...constructorArgs);
+                        return new filters[prop](constructorArgs);
                     }),
                 [filterKeys],
             ),
