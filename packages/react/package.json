@@ -11,15 +11,15 @@
   "sideEffects": false,
   "main": "index.js",
   "module": "module.js",
-  "typings": "./dist/types/index.d.ts",
+  "typings": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/index.d.ts",
         "default": "./module.js"
       },
       "require": {
-        "types": "./dist/types/index.d.ts",
+        "types": "./dist/index.d.ts",
         "default": "./index.js"
       }
     }

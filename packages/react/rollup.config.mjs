@@ -1,4 +1,5 @@
 import copy from 'rollup-plugin-copy';
+import dts from 'rollup-plugin-dts';
 import {
     getBuildFormat,
     getRollupTSConfig,
@@ -11,7 +12,6 @@ const buildType = isProductionBuild() ? '' : '-dev';
 
 const external = [
     'pixi.js',
-    '@pixi/react-invariant',
     'lodash.isnil',
     'lodash.times',
     'prop-types',
@@ -57,5 +57,12 @@ else
         )
     );
 }
+
+builds.push({
+    // path to your declaration files root
+    input: './dist/types/index.d.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [dts({ tsconfig: './tsconfig.types.json' })],
+});
 
 export default builds;

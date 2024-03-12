@@ -1,4 +1,3 @@
-import dts from 'rollup-plugin-dts';
 import esbuild from 'rollup-plugin-esbuild';
 import filesize from 'rollup-plugin-filesize';
 import sourcemaps from 'rollup-plugin-sourcemaps';
@@ -32,9 +31,6 @@ export function getRollupTSConfig(dest, format, merge = {})
                 browser: true,
                 preferBuiltins: false,
                 mainFields: ['main', 'jsnext'],
-            }),
-            dts({
-                tsconfig: 'tsconfig.types.json',
             }),
             esbuild({
                 exclude: '**/node_modules/**',
